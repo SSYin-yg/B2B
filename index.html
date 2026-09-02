@@ -19,7 +19,7 @@
     .topbar { height:35px; background:#0b151b; color:#a7b1b4; font-size:12px; }
     .topbar .shell { height:100%; display:flex; justify-content:space-between; align-items:center; }
     .topbar-right { display:flex; gap:20px; align-items:center; }
-    .topbar-right span:first-child { color:var(--yellow); }
+    
     header { height:78px; background:rgba(255,255,255,.98); position:sticky; top:0; z-index:20; border-bottom:1px solid #edf0ee; }
     header .shell { height:100%; display:flex; align-items:center; justify-content:space-between; }
     .brand { display:flex; align-items:center; gap:11px; font-weight:800; letter-spacing:.5px; font-size:20px; }
@@ -116,24 +116,72 @@
     .modal.open .modal-card { transform: scale(1); opacity:1; }
     .modal-card h2 { margin:0 0 5px; font-size:25px; }.modal-card p{margin:0 0 20px;color:#69757a;font-size:13px}.close{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:27px;cursor:pointer;color:#647177}
     .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }.form-grid .full{grid-column:1/-1}.form-grid input,.form-grid select { width:100%; padding:11px 12px; border:1px solid #d8dedf; outline:none; }.form-grid input:focus,.form-grid select:focus{border-color:#c77a0c}.form-note{font-size:11px;color:#809096;margin-top:12px}.success{display:none;background:#eef6ea;color:#34672c;padding:12px;margin-top:14px;font-size:13px}
-    @media(max-width:1000px) { .product-grid{grid-template-columns:repeat(3,1fr)} }
+@media(max-width:1000px) { .product-grid{grid-template-columns:repeat(3,1fr)} }
     @media(max-width:860px) { nav { display:none; position:absolute; top:78px; left:0; right:0; background:#fff; padding:20px 24px; flex-direction:column; align-items:flex-start; box-shadow:0 10px 20px rgba(0,0,0,.08); } nav.open{display:flex}.mobile-menu{display:block}.hero .shell{padding-top:70px}.trust-strip .shell{grid-template-columns:repeat(2,1fr);gap:18px;padding:18px 0}.metric,.metric:first-child{padding:0 14px;border-left:1px solid rgba(255,255,255,.16)}.metric:nth-child(odd){border-left:0;padding-left:0}.product-grid{grid-template-columns:repeat(2,1fr)}.solutions{grid-template-columns:1fr}.solutions-image{min-height:280px}.footer-top{grid-template-columns:1.5fr 1fr}.buyer-row{align-items:flex-start;flex-direction:column}.cta .shell{align-items:flex-start;gap:26px;flex-direction:column} }
     @media(max-width:560px) { .shell{width:min(100% - 32px,1200px)}.topbar-left{display:none}.topbar .shell{justify-content:flex-end}.topbar-right{gap:11px}header{height:67px}.brand{font-size:17px}.brand-mark{width:28px;height:28px}.hero{min-height:670px}.hero .shell{padding-top:62px}h1{font-size:39px;letter-spacing:-1px}.hero-copy{font-size:14px}.trust-strip .shell{min-height:120px}.metric strong{font-size:26px}.section{padding:60px 0}.section-head{align-items:flex-start;flex-direction:column;gap:14px}.section h2{font-size:25px}.product-grid{grid-template-columns:1fr}.product{min-height:220px}.solutions-content{padding:35px 25px}.solution-list{grid-template-columns:1fr}.service-grid{grid-template-columns:1fr}.service{border-right:0;border-bottom:1px solid rgba(255,255,255,.15);padding:25px 0;margin:0}.service:last-child{border-bottom:0}.buyer-logos{gap:15px;font-size:16px}.footer-top{grid-template-columns:1fr 1fr;gap:25px}.footer-top>div:first-child{grid-column:1/-1}.copyright{gap:7px;flex-direction:column}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto} }
+  
+    .topbar-right { display:flex; gap:16px; align-items:center; }
+    .lang-switch { display:inline-flex; border:1px solid rgba(255,255,255,.18); border-radius:2px; overflow:hidden; }
+    .lang-btn { border:0; background:transparent; color:#a7b1b4; font:600 11px "Barlow Condensed",sans-serif; letter-spacing:1px; padding:4px 10px; cursor:pointer; transition:background 160ms var(--ease-out,ease), color 160ms var(--ease-out,ease); }
+    .lang-btn:hover { color:#fff; }
+    .lang-btn.active { background:var(--yellow); color:#17252c; }
+    .topbar-left { color:#a7b1b4; }
+
+  
+    /* English layout refinements */
+    html[lang="en"] body { letter-spacing: 0.01em; }
+    html[lang="en"] h1 { letter-spacing: -0.5px; line-height: 1.2; max-width: 18ch; }
+    html[lang="en"] .hero-copy { max-width: 36em; }
+    html[lang="en"] .section h2 { letter-spacing: -0.3px; }
+    html[lang="en"] nav { gap: 22px; }
+    html[lang="en"] .nav-cta, html[lang="en"] .primary { letter-spacing: 0.02em; }
+    html[lang="en"] .metric strong { letter-spacing: 0; }
+    html[lang="en"] .product h3 { font-size: 18px; line-height: 1.3; }
+    html[lang="en"] .faq-item summary { font-size: 14.5px; line-height: 1.45; }
+    html[lang="en"] .catalog-hero h1 { max-width: 16ch; }
+    html[lang="en"] .filter { padding: 8px 12px; font-size: 12.5px; }
+    html[lang="en"] .cta h2 { letter-spacing: -0.4px; }
+    html[lang="en"] .footer-links { gap: 8px; }
+    @media (max-width: 860px) {
+      html[lang="en"] nav { gap: 14px; }
+      html[lang="en"] h1 { max-width: none; }
+    }
+
+  
+    .hero-actions { position: relative; z-index: 2; margin-bottom: 28px; }
+    .trust-strip { z-index: 1; }
+    html[lang="en"] .hero { padding-bottom: 20px; }
+    html[lang="en"] .hero .shell { padding-bottom: 24px; }
+    html[lang="en"] .hero-actions { margin-bottom: 36px; }
+    html[lang="en"] .trust-strip .shell { min-height: 96px; }
+
+  
+    /* Prevent CTA / trust-strip overlap */
+    .hero { display: flex; flex-direction: column; }
+    .hero > .shell { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 110px; box-sizing: border-box; }
+    .hero-actions { position: relative; z-index: 2; }
+    .trust-strip { z-index: 3; }
+    html[lang="en"] .hero > .shell { padding-bottom: 120px; }
+    html[lang="en"] .hero-actions { gap: 12px; flex-wrap: wrap; }
+    html[lang="en"] .hero-actions .primary,
+    html[lang="en"] .hero-actions .outline { white-space: nowrap; }
+
   </style>
 </head>
 <body>
-  <div class="topbar"><div class="shell"><span class="topbar-left">专业矿用设备采购与服务平台</span><div class="topbar-right"><span>● 在线服务</span><span>中文 / EN</span><span>帮助中心</span></div></div></div>
-  <header><div class="shell"><a href="#top" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a class="active" href="#top">首页</a><a href="equipment-catalog.html">设备目录</a><a href="#solutions">行业方案</a><a href="#service">服务支持</a><a href="faq.html">常见问题</a><a href="#about">关于我们</a><button class="nav-cta open-modal">获取报价</button></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
+  <div class="topbar"><div class="shell"><span class="topbar-left"><span data-i18n="topbar.tagline">专业矿用设备采购与服务平台</span></span><div class="topbar-right"><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div></div></div></div></div>
+  <header><div class="shell"><a href="#top" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a class="active" href="#top" data-i18n="nav.home">首页</a><a href="equipment-catalog.html" data-i18n="nav.catalog">设备目录</a><a href="#solutions" data-i18n="nav.solutions">行业方案</a><a href="#service" data-i18n="nav.service">服务支持</a><a href="faq.html" data-i18n="nav.faq" data-i18n="footer.faq"><span data-i18n="footer.faq">常见问题</span></a><a href="#about" data-i18n="nav.about">关于我们</a><button class="nav-cta open-modal" data-i18n="nav.quote">获取报价</button></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
   <main id="top">
-    <section class="hero"><div class="shell"><div class="eyebrow">mining equipment marketplace</div><h1>让每一台设备，<br />成为矿山的<em>可靠生产力</em></h1><p class="hero-copy">覆盖露天开采、井下采掘、破碎筛分与智能运输全流程，为全球矿业客户提供可信赖的设备采购与全周期支持。</p><div class="hero-actions"><button class="primary open-modal">立即获取方案</button><a href="#products" class="outline">浏览设备</a></div></div><div class="trust-strip"><div class="shell"><div class="metric"><strong>100<i>+</i></strong><span>在售设备型号</span></div><div class="metric"><strong>48<i>个</i></strong><span>服务覆盖国家与地区</span></div><div class="metric"><strong>10<i>年+</i></strong><span>矿业行业服务经验</span></div><div class="metric"><strong>24<i>小时</i></strong><span>快速响应机制</span></div></div></div></section>
-    <section class="section" id="products"><div class="shell"><div class="section-head"><div><div class="section-label">FEATURED EQUIPMENT</div><h2>为高产能而生的核心装备</h2></div><p>从移动破碎到筛分输送，目录已收录 31 款成熟矿山设备，覆盖骨料与矿石加工关键流程。<br /><a class="catalog-link" href="equipment-catalog.html">查看完整设备目录</a></p></div><div class="product-grid"><article class="product" data-name="Wheeled Jaw Crushing Station"><span class="tag">MOBILE CRUSHING</span><h3>Wheeled Jaw<br />Crushing Station</h3><p>轮胎式颚破移动站</p><span class="arrow">→</span></article><article class="product" data-name="Crawler Jaw Crusher"><span class="tag">MOBILE CRUSHING</span><h3>Crawler<br />Jaw Crusher</h3><p>履带式颚破移动站</p><span class="arrow">→</span></article><article class="product" data-name="Multi-Cylinder Hydraulic Cone Crusher"><span class="tag">CONE CRUSHING</span><h3>Multi-Cylinder<br />Hydraulic Cone</h3><p>多缸液压圆锥破碎机</p><span class="arrow">→</span></article><article class="product" data-name="VSI Impact Crusher"><span class="tag">SAND MAKING</span><h3>VSI Impact<br />Crusher</h3><p>VSI 立轴冲击式制砂机</p><span class="arrow">→</span></article><article class="product" data-name="Circular Vibrating Screen"><span class="tag">SCREENING</span><h3>Circular<br />Vibrating Screen</h3><p>圆振动筛</p><span class="arrow">→</span></article></div></div></section>
-    <section class="section" id="solutions"><div class="shell"><div class="solutions"><div class="solutions-image"><div class="stamp">从矿山现场到设备交付<br />每一步都有专业团队参与</div></div><div class="solutions-content"><div class="section-label">SOLUTIONS FOR EVERY MINE</div><h2>不只卖设备，更懂矿山作业</h2><p>围绕您的矿种、产能、工况与预算，提供从设备组合到落地交付的全流程支持。</p><ul class="solution-list"><li>金属矿山开采方案</li><li>砂石骨料生产线</li><li>煤矿井下装备配套</li><li>尾矿处理与环保改造</li></ul><a class="link-arrow" href="#service">了解行业解决方案</a></div></div></div></section>
-    <section class="section section-dark" id="service"><div class="shell"><div class="section-head"><div><div class="section-label">WHY MINELINK</div><h2>让复杂采购，变得更确定</h2></div><p>用标准化流程与当地化服务，降低设备采购、跨境交付和后期运维中的不确定性。</p></div><div class="service-grid"><div class="service"><div class="icon">01</div><h3>专业选型顾问</h3><p>按矿种与作业工况核验参数，输出适配的设备组合及采购建议。</p></div><div class="service"><div class="icon">02</div><h3>透明交易保障</h3><p>供应商资质审核、关键节点验货与清晰合同条款，全程可追溯。</p></div><div class="service"><div class="icon">03</div><h3>全球交付服务</h3><p>支持出口报关、海陆联运、安装指导与备件保障，设备安心落地。</p></div></div></div></section>
-    <section class="buyers"><div class="shell buyer-row"><div><h2>服务于全球矿业客户</h2><p>与大型矿山、工程承包商、设备经销商共同创造长期价值。</p></div><div class="buyer-logos"><span>GOLDROCK</span><span>HORIZON</span><span>METALCORE</span><span>STONEWAY</span></div></div></section>
-    <section class="cta"><div class="shell"><div><h2>正在规划新的矿山项目？</h2><p>留下您的采购需求，顾问将在 24 小时内与您联系。</p></div><button class="primary open-modal">提交采购需求 →</button></div></section>
+    <section class="hero"><div class="shell"><div class="eyebrow"><span data-i18n="hero.eyebrow">mining equipment marketplace</span></div><h1><span data-i18n="hero.title">让每一台设备，成为矿山的可靠生产力</span></h1><p class="hero-copy" data-i18n="hero.copy">覆盖露天开采、井下采掘、破碎筛分与智能运输全流程，为全球矿业客户提供可信赖的设备采购与全周期支持。</p><div class="hero-actions"><button class="primary open-modal"><span data-i18n="hero.cta1">立即获取方案</span></button><a href="#products" class="outline"><span data-i18n="hero.cta2">浏览设备</span></a></div></div><div class="trust-strip"><div class="shell"><div class="metric"><strong>100<i>+</i></strong><span data-i18n="metric.models">在售设备型号</span></div><div class="metric"><strong>48<i data-i18n="metric.unit.countries">个</i></strong><span data-i18n="metric.countries">服务覆盖国家与地区</span></div><div class="metric"><strong>10<i data-i18n="metric.unit.years">年+</i></strong><span data-i18n="metric.years">矿业行业服务经验</span></div><div class="metric"><strong>24<i data-i18n="metric.unit.hours">小时</i></strong><span data-i18n="metric.response">快速响应机制</span></div></div></div></section>
+    <section class="section" id="products"><div class="shell"><div class="section-head"><div><div class="section-label"><span data-i18n="products.label">FEATURED EQUIPMENT</span></div><h2><span data-i18n="products.title">为高产能而生的核心装备</span></h2></div><p><span data-i18n="products.desc">从移动破碎到筛分输送，目录已收录 31 款成熟矿山设备，覆盖骨料与矿石加工关键流程。</span><br /><a class="catalog-link" href="equipment-catalog.html"><span data-i18n="products.catalogLink">查看完整设备目录</span></a></p></div><div class="product-grid"><article class="product" data-name="Wheeled Jaw Crushing Station"><span class="tag">MOBILE CRUSHING</span><h3>Wheeled Jaw<br />Crushing Station</h3><p>轮胎式颚破移动站</p><span class="arrow">→</span></article><article class="product" data-name="Crawler Jaw Crusher"><span class="tag">MOBILE CRUSHING</span><h3>Crawler<br />Jaw Crusher</h3><p>履带式颚破移动站</p><span class="arrow">→</span></article><article class="product" data-name="Multi-Cylinder Hydraulic Cone Crusher"><span class="tag">CONE CRUSHING</span><h3>Multi-Cylinder<br />Hydraulic Cone</h3><p>多缸液压圆锥破碎机</p><span class="arrow">→</span></article><article class="product" data-name="VSI Impact Crusher"><span class="tag">SAND MAKING</span><h3>VSI Impact<br />Crusher</h3><p>VSI 立轴冲击式制砂机</p><span class="arrow">→</span></article><article class="product" data-name="Circular Vibrating Screen"><span class="tag">SCREENING</span><h3>Circular<br />Vibrating Screen</h3><p>圆振动筛</p><span class="arrow">→</span></article></div></div></section>
+    <section class="section" id="solutions"><div class="shell"><div class="solutions"><div class="solutions-image"><div class="stamp"><span data-i18n="solutions.stamp">从矿山现场到设备交付
+每一步都有专业团队参与</span></div></div><div class="solutions-content"><div class="section-label"><span data-i18n="solutions.label">SOLUTIONS FOR EVERY MINE</span></div><h2><span data-i18n="solutions.title">不只卖设备，更懂矿山作业</span></h2><p><span data-i18n="solutions.copy">围绕您的矿种、产能、工况与预算，提供从设备组合到落地交付的全流程支持。</span></p><ul class="solution-list"><li><span data-i18n="solutions.s1">金属矿山开采方案</span></li><li><span data-i18n="solutions.s2">砂石骨料生产线</span></li><li><span data-i18n="solutions.s3">煤矿井下装备配套</span></li><li><span data-i18n="solutions.s4">尾矿处理与环保改造</span></li></ul><a class="link-arrow" href="#service"><span data-i18n="solutions.link">了解行业解决方案</span></a></div></div></div></section>
+    <section class="section section-dark" id="service"><div class="shell"><div class="section-head"><div><div class="section-label"><span data-i18n="service.label">WHY MINELINK</span></div><h2><span data-i18n="service.title">让复杂采购，变得更确定</span></h2></div><p><span data-i18n="service.copy">用标准化流程与当地化服务，降低设备采购、跨境交付和后期运维中的不确定性。</span></p></div><div class="service-grid"><div class="service"><div class="icon">01</div><h3><span data-i18n="service.1.title">专业选型顾问</span></h3><p><span data-i18n="service.1.copy">按矿种与作业工况核验参数，输出适配的设备组合及采购建议。</span></p></div><div class="service"><div class="icon">02</div><h3><span data-i18n="service.2.title">透明交易保障</span></h3><p><span data-i18n="service.2.copy">供应商资质审核、关键节点验货与清晰合同条款，全程可追溯。</span></p></div><div class="service"><div class="icon">03</div><h3><span data-i18n="service.3.title">全球交付服务</span></h3><p><span data-i18n="service.3.copy">支持出口报关、海陆联运、安装指导与备件保障，设备安心落地。</span></p></div></div></div></section>
+    <section class="buyers"><div class="shell buyer-row"><div><h2><span data-i18n="buyers.title">服务于全球矿业客户</span></h2><p><span data-i18n="buyers.copy">与大型矿山、工程承包商、设备经销商共同创造长期价值。</span></p></div><div class="buyer-logos"><span>GOLDROCK</span><span>HORIZON</span><span>METALCORE</span><span>STONEWAY</span></div></div></section>
+    <section class="cta"><div class="shell"><div><h2><span data-i18n="cta.title">正在规划新的矿山项目？</span></h2><p><span data-i18n="cta.copy">留下您的采购需求，顾问将在 24 小时内与您联系。</span></p></div><button class="primary open-modal"><span data-i18n="cta.btn">提交采购需求 →</span></button></div></section>
   </main>
-  <footer id="about"><div class="shell"><div class="footer-top"><div><div class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></div><p class="footer-copy">面向全球矿业客户的设备采购与服务平台，让优质矿机触达每一座需要它的矿山。</p></div><div><div class="footer-title">设备目录</div><div class="footer-links"><a href="equipment-catalog.html?filter=mobile">移动破碎站</a><a href="equipment-catalog.html?filter=crushing">破碎制砂设备</a><a href="equipment-catalog.html?filter=screening">筛分输送设备</a><a href="equipment-catalog.html?filter=washing">洗砂设备</a><a href="equipment-catalog.html?filter=parts">易损件配件</a></div></div><div><div class="footer-title">服务支持</div><div class="footer-links"><a href="#service">设备选型</a><a href="#service">验货交付</a><a href="#service">售后运维</a><a href="#service">备件供应</a><a href="faq.html">常见问题</a></div></div><div><div class="footer-title">联系我们</div><div class="contact">400-800-6628</div><div class="footer-links" style="margin-top:10px"><span>sales@minelink.cn</span><span>中国 · 上海 · 全球服务</span></div></div></div><div class="copyright"><span>© 2025 Minelink Equipment. All rights reserved.</span><span>隐私政策　|　使用条款</span></div></div></footer>
-  <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2>获取专属设备方案</h2><p>请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</p><form id="leadForm"><div class="form-grid"><input required placeholder="您的姓名 *" /><input required placeholder="联系电话 / WhatsApp *" /><input class="full" type="email" placeholder="工作邮箱" /><select class="full" id="productSelect"><option value="">请选择意向设备</option><option>露天采掘设备</option><option>井下采矿设备</option><option>破碎筛分设备</option><option>输送与辅助设备</option><option>其他需求</option></select><input class="full" placeholder="项目所在国家 / 地区" /></div><button class="primary" style="width:100%;margin-top:16px" type="submit">提交需求</button><div class="form-note">提交即表示您同意我们为本次咨询联系您。</div><div class="success" id="success">需求已提交，我们会在 24 小时内联系您。</div></form></div></div>
+  <footer id="about"><div class="shell"><div class="footer-top"><div><div class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></div><p class="footer-copy"><span data-i18n="footer.copy">面向全球矿业客户的设备采购与服务平台，让优质矿机触达每一座需要它的矿山。</span></p></div><div><div class="footer-title" data-i18n="footer.catalog">设备目录</div><div class="footer-links"><a href="equipment-catalog.html?filter=mobile"><span data-i18n="footer.mobile">移动破碎站</span></a><a href="equipment-catalog.html?filter=crushing"><span data-i18n="footer.crushing">破碎制砂设备</span></a><a href="equipment-catalog.html?filter=screening"><span data-i18n="footer.screening">筛分输送设备</span></a><a href="equipment-catalog.html?filter=washing"><span data-i18n="footer.washing">洗砂设备</span></a><a href="equipment-catalog.html?filter=parts"><span data-i18n="footer.parts">易损件配件</span></a></div></div><div><div class="footer-title" data-i18n="footer.support">服务支持</div><div class="footer-links"><a href="#service"><span data-i18n="footer.select">设备选型</span></a><a href="#service"><span data-i18n="footer.inspect">验货交付</span></a><a href="#service"><span data-i18n="footer.aftersale">售后运维</span></a><a href="#service"><span data-i18n="footer.spare">备件供应</span></a><a href="faq.html"><span data-i18n="footer.faq">常见问题</span></a></div></div><div><div class="footer-title" data-i18n="footer.contact">联系我们</div><div class="contact">400-800-6628</div><div class="footer-links" style="margin-top:10px"><span>sales@minelink.cn</span><span><span data-i18n="footer.location">中国 · 上海 · 全球服务</span></span></div></div></div><div class="copyright"><span>© 2025 Minelink Equipment. All rights reserved.</span><span><span data-i18n="footer.privacy">隐私政策</span>　|　<span data-i18n="footer.terms">使用条款</span></span></div></div></footer>
+  <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2><span data-i18n="modal.title">获取专属设备方案</span></h2><p><span data-i18n="modal.copy">请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</span></p><form id="leadForm"><div class="form-grid"><input required placeholder="您的姓名 *" data-i18n="modal.name" /><input required placeholder="联系电话 / WhatsApp *" data-i18n="modal.phone" /><input class="full" type="email" placeholder="工作邮箱" data-i18n="modal.email" /><select class="full" id="productSelect"><option value="" data-i18n="modal.product">请选择意向设备</option><option data-i18n="modal.opt1">露天采掘设备</option><option data-i18n="modal.opt2">井下采矿设备</option><option data-i18n="modal.opt3">破碎筛分设备</option><option data-i18n="modal.opt4">输送与辅助设备</option><option data-i18n="modal.opt5">其他需求</option></select><input class="full" placeholder="项目所在国家 / 地区" data-i18n="modal.region" /></div><button class="primary" style="width:100%;margin-top:16px" type="submit"><span data-i18n="modal.submit">提交需求</span></button><div class="form-note"><span data-i18n="modal.note">提交即表示您同意我们为本次咨询联系您。</span></div><div class="success" id="success"><span data-i18n="modal.success">需求已提交，我们会在 24 小时内联系您。</span></div></form></div></div>
   <script>
     const modal=document.getElementById('modal'), nav=document.getElementById('nav');
     document.querySelectorAll('.open-modal').forEach(b=>b.addEventListener('click',()=>{modal.classList.add('open');modal.setAttribute('aria-hidden','false')}));
@@ -145,5 +193,337 @@
     const requestedProduct=new URLSearchParams(window.location.search).get('product');
     if(requestedProduct){const productSelect=document.getElementById('productSelect');const option=document.createElement('option');option.value=requestedProduct;option.textContent=requestedProduct;productSelect.prepend(option);productSelect.value=requestedProduct;modal.classList.add('open');}
   </script>
+
+  
+
+
+<script>
+(function(){
+  const I18N = {
+    zh: {
+      // Topbar & Nav
+      "topbar.tagline": "专业矿用设备采购与服务平台",
+      "nav.home": "首页",
+      "nav.catalog": "设备目录",
+      "nav.solutions": "行业方案",
+      "nav.service": "服务支持",
+      "nav.faq": "常见问题",
+      "nav.about": "关于我们",
+      "nav.quote": "获取报价",
+      // Hero
+      "hero.eyebrow": "mining equipment marketplace",
+      "hero.title": "让每一台设备，成为矿山的可靠生产力",
+      "hero.copy": "覆盖露天开采、井下采掘、破碎筛分与智能运输全流程，为全球矿业客户提供可信赖的设备采购与全周期支持。",
+      "hero.cta1": "立即获取方案",
+      "hero.cta2": "浏览设备",
+      "metric.models": "在售设备型号",
+      "metric.countries": "服务覆盖国家与地区",
+      "metric.years": "矿业行业服务经验",
+      "metric.response": "快速响应机制",
+      "metric.unit.countries": "个",
+      "metric.unit.years": "年+",
+      "metric.unit.hours": "小时",
+      // Products
+      "products.label": "FEATURED EQUIPMENT",
+      "products.title": "为高产能而生的核心装备",
+      "products.desc": "从移动破碎到筛分输送，目录已收录 31 款成熟矿山设备，覆盖骨料与矿石加工关键流程。",
+      "products.catalogLink": "查看完整设备目录",
+      // Solutions
+      "solutions.label": "SOLUTIONS FOR EVERY MINE",
+      "solutions.title": "不只卖设备，更懂矿山作业",
+      "solutions.copy": "围绕您的矿种、产能、工况与预算，提供从设备组合到落地交付的全流程支持。",
+      "solutions.s1": "金属矿山开采方案",
+      "solutions.s2": "砂石骨料生产线",
+      "solutions.s3": "煤矿井下装备配套",
+      "solutions.s4": "尾矿处理与环保改造",
+      "solutions.link": "了解行业解决方案",
+      "solutions.stamp": "从矿山现场到设备交付\n每一步都有专业团队参与",
+      // Service
+      "service.label": "WHY MINELINK",
+      "service.title": "让复杂采购，变得更确定",
+      "service.copy": "用标准化流程与当地化服务，降低设备采购、跨境交付和后期运维中的不确定性。",
+      "service.1.title": "专业选型顾问",
+      "service.1.copy": "按矿种与作业工况核验参数，输出适配的设备组合及采购建议。",
+      "service.2.title": "透明交易保障",
+      "service.2.copy": "供应商资质审核、关键节点验货与清晰合同条款，全程可追溯。",
+      "service.3.title": "全球交付服务",
+      "service.3.copy": "支持出口报关、海陆联运、安装指导与备件保障，设备安心落地。",
+      // Buyers
+      "buyers.title": "服务于全球矿业客户",
+      "buyers.copy": "与大型矿山、工程承包商、设备经销商共同创造长期价值。",
+      // CTA
+      "cta.title": "正在规划新的矿山项目？",
+      "cta.copy": "留下您的采购需求，顾问将在 24 小时内与您联系。",
+      "cta.btn": "提交采购需求 →",
+      // Footer
+      "footer.copy": "面向全球矿业客户的设备采购与服务平台，让优质矿机触达每一座需要它的矿山。",
+      "footer.catalog": "设备目录",
+      "footer.mobile": "移动破碎站",
+      "footer.crushing": "破碎制砂设备",
+      "footer.screening": "筛分输送设备",
+      "footer.washing": "洗砂设备",
+      "footer.parts": "易损件配件",
+      "footer.support": "服务支持",
+      "footer.select": "设备选型",
+      "footer.inspect": "验货交付",
+      "footer.aftersale": "售后运维",
+      "footer.spare": "备件供应",
+      "footer.faq": "常见问题",
+      "footer.contact": "联系我们",
+      "footer.location": "中国 · 上海 · 全球服务",
+      "footer.privacy": "隐私政策",
+      "footer.terms": "使用条款",
+      "footer.home": "返回首页",
+      // Modal
+      "modal.title": "获取专属设备方案",
+      "modal.copy": "请留下联系方式与采购意向，我们将安排矿机顾问为您服务。",
+      "modal.name": "您的姓名 *",
+      "modal.phone": "联系电话 / WhatsApp *",
+      "modal.email": "工作邮箱",
+      "modal.product": "请选择意向设备",
+      "modal.opt1": "露天采掘设备",
+      "modal.opt2": "井下采矿设备",
+      "modal.opt3": "破碎筛分设备",
+      "modal.opt4": "输送与辅助设备",
+      "modal.opt5": "其他需求",
+      "modal.region": "项目所在国家 / 地区",
+      "modal.submit": "提交需求",
+      "modal.note": "提交即表示您同意我们为本次咨询联系您。",
+      "modal.success": "需求已提交，我们会在 24 小时内联系您。",
+      // Catalog page
+      "catalog.breadcrumb": "首页　/　设备目录",
+      "catalog.eyebrow": "EQUIPMENT CATALOG",
+      "catalog.title": "矿山破碎筛分设备目录",
+      "catalog.copy": "收录 31 款矿山设备与易损件，覆盖移动破碎、固定破碎制砂、筛分洗砂、输送给料等核心环节。点击设备即可发起报价咨询。",
+      "catalog.all": "全部设备",
+      "catalog.mobile": "移动破碎站",
+      "catalog.crushing": "破碎制砂",
+      "catalog.screening": "筛分输送",
+      "catalog.washing": "洗砂设备",
+      "catalog.parts": "易损件",
+      "catalog.search": "搜索设备名称",
+      "catalog.result": "当前展示",
+      "catalog.units": "款设备",
+      "catalog.empty": "未找到匹配设备，请尝试更换关键词。",
+      "catalog.inquiry": "MODEL INQUIRY",
+      "catalog.quote": "获取报价",
+      "catalog.cta.title": "找不到适合的设备？",
+      "catalog.cta.copy": "告诉我们矿石类型、产能与场地条件，我们将为您推荐合适的设备组合。",
+      "catalog.cta.btn": "提交采购需求 →",
+      // FAQ page
+      "faq.breadcrumb": "首页　/　常见问题",
+      "faq.eyebrow": "FAQ",
+      "faq.title": "常见问题",
+      "faq.copy": "关于设备类型、出口市场、订购、付款、运输、认证与售后支持，快速了解我们能为您提供什么。",
+      "faq.q1": "你们生产哪些类型的采矿机械？",
+      "faq.a1": "设备类型涵盖破碎、筛分、给料、洗砂、脱水、输送等设备及耐磨配件等多个环节。适配采石场、矿山开采、砂石骨料、建材加工等多类项目场景。",
+      "faq.q2": "你们的出口产品销往哪些国家和地区？",
+      "faq.a2": "我们的破碎设备、矿山机械及耐磨配件可出口至全球多个国家和地区，主要市场包括亚洲、欧洲、北美、南美、中东、非洲及大洋洲。",
+      "faq.q3": "最低订购量（MOQ）是多少？",
+      "faq.a3": "起订量依产品品类、规格及定制需求有所区别：标准整机设备 1 台即可起订；配件及定制产品数量可灵活协商。",
+      "faq.q4": "如何获得报价？",
+      "faq.a4": "通过邮件或在线聊天联系，提供设备型号、产量、进出料粒度及物料特性等信息，或配件图纸。如果您需要整套解决方案，可由团队为您定制。",
+      "faq.q5": "你们接受哪些付款方式？",
+      "faq.a5": "常用付款方式包括：T/T 电汇、L/C 信用证。如有特殊付款需求，欢迎联系我们，我们可以根据具体订单情况协商合适的付款方案。",
+      "faq.q6": "你们的运输条款是什么？",
+      "faq.a6": "支持海运、空运及陆运等。常用贸易条款包括 EXW、FOB、CIF 和 DDP 等。我们会根据产品重量、体积和目的港情况协助客户选择合适的运输方式，并提供装箱、出口报关及相关运输文件支持。",
+      "faq.q7": "你们的产品有哪些质量认证？",
+      "faq.a7": "符合 ISO 9001 标准，可根据需求提供 CE 合规文件、材质证明及检测报告。不同产品和出口国家的认证及技术要求可能有所不同，请在询价时提供设备型号、产品类型及目的国。",
+      "faq.q8": "你们提供安装和售后支持吗？",
+      "faq.a8": "提供安装手册、操作说明、远程技术指导以及故障分析排查服务。如遇到设备运行或配件使用问题，我们的技术团队可协助客户进行故障分析并提供解决方案。",
+      "faq.q9": "可以根据具体要求定制设备吗？",
+      "faq.a9": "完全支持根据客户的技术参数、图纸、样品及实际工况进行设备与配件的定制生产。",
+      "faq.q10": "在下大订单之前，我该如何验证质量？",
+      "faq.a10": "可行采购样品或小批量货品，完成质量验证；大宗订单支持第三方检验，并提供材质与检测报告。",
+      "faq.cta.title": "还有其他问题？",
+      "faq.cta.copy": "留下您的采购需求，顾问将在 24 小时内与您联系。",
+      "faq.cta.btn": "提交采购需求 →"
+    },
+    en: {
+      "topbar.tagline": "Mining Equipment Sourcing & Service Platform",
+      "nav.home": "Home",
+      "nav.catalog": "Equipment",
+      "nav.solutions": "Solutions",
+      "nav.service": "Support",
+      "nav.faq": "FAQ",
+      "nav.about": "About",
+      "nav.quote": "Get a Quote",
+      "hero.eyebrow": "Mining Equipment Marketplace",
+      "hero.title": "Reliable machines.\nReal productivity for every mine.",
+      "hero.copy": "From open-pit and underground extraction to crushing, screening and transport — we help global mining teams source proven equipment and stay supported for the full lifecycle.",
+      "hero.cta1": "Request a solution",
+      "hero.cta2": "Browse equipment",
+      "metric.models": "Models available",
+      "metric.countries": "Countries & regions",
+      "metric.years": "Years in mining",
+      "metric.response": "Response time",
+      "metric.unit.countries": "",
+      "metric.unit.years": "+",
+      "metric.unit.hours": "h",
+      "products.label": "Featured equipment",
+      "products.title": "Built for high-capacity operations",
+      "products.desc": "Thirty-one proven models spanning mobile crushing through screening and conveying — covering the full aggregate and ore processing flow.",
+      "products.catalogLink": "View full catalog",
+      "solutions.label": "Solutions for every mine",
+      "solutions.title": "Equipment advice grounded in real mining work",
+      "solutions.copy": "We match machines to your ore, capacity, site conditions and budget — from package design through delivery and commissioning.",
+      "solutions.s1": "Metal mine extraction",
+      "solutions.s2": "Sand & aggregate lines",
+      "solutions.s3": "Underground coal support",
+      "solutions.s4": "Tailings & green upgrades",
+      "solutions.link": "Explore solutions",
+      "solutions.stamp": "From site survey to delivery.\nSpecialists at every step.",
+      "service.label": "Why Minelink",
+      "service.title": "Procurement you can plan around",
+      "service.copy": "Clear process and local support cut uncertainty across sourcing, cross-border delivery and after-sales.",
+      "service.1.title": "Selection advisors",
+      "service.1.copy": "We check duty and ore data, then recommend machine combinations that fit the job.",
+      "service.2.title": "Transparent deals",
+      "service.2.copy": "Qualified suppliers, staged inspection and plain contract terms — fully traceable.",
+      "service.3.title": "Global delivery",
+      "service.3.copy": "Export clearance, sea and land logistics, installation guidance and spare parts support.",
+      "buyers.title": "Trusted by mining teams worldwide",
+      "buyers.copy": "Long-term partnerships with mines, contractors and equipment distributors.",
+      "cta.title": "Planning a new project?",
+      "cta.copy": "Share your requirements — an advisor will reply within 24 hours.",
+      "cta.btn": "Submit inquiry →",
+      "footer.copy": "A global platform for mining equipment procurement — quality machines for every site that needs them.",
+      "footer.catalog": "Catalog",
+      "footer.mobile": "Mobile crushing",
+      "footer.crushing": "Crushing & sand",
+      "footer.screening": "Screening & conveying",
+      "footer.washing": "Sand washing",
+      "footer.parts": "Wear parts",
+      "footer.support": "Support",
+      "footer.select": "Selection advice",
+      "footer.inspect": "Inspection & delivery",
+      "footer.aftersale": "After-sales",
+      "footer.spare": "Spare parts",
+      "footer.faq": "FAQ",
+      "footer.contact": "Contact",
+      "footer.location": "Shanghai · Global service",
+      "footer.privacy": "Privacy",
+      "footer.terms": "Terms",
+      "footer.home": "Home",
+      "modal.title": "Request a tailored plan",
+      "modal.copy": "Leave your details and requirements. A mining equipment advisor will follow up.",
+      "modal.name": "Full name *",
+      "modal.phone": "Phone / WhatsApp *",
+      "modal.email": "Work email",
+      "modal.product": "Equipment interest",
+      "modal.opt1": "Open-pit mining",
+      "modal.opt2": "Underground mining",
+      "modal.opt3": "Crushing & screening",
+      "modal.opt4": "Conveying & auxiliaries",
+      "modal.opt5": "Other",
+      "modal.region": "Project country / region",
+      "modal.submit": "Submit",
+      "modal.note": "By submitting, you agree to be contacted about this inquiry.",
+      "modal.success": "Received. We will contact you within 24 hours.",
+      "catalog.breadcrumb": "Home  /  Equipment",
+      "catalog.eyebrow": "Equipment catalog",
+      "catalog.title": "Crushing & screening equipment",
+      "catalog.copy": "Thirty-one machines and wear parts for mobile crushing, fixed crushing, sand making, screening, washing and conveying. Select a model to request a quote.",
+      "catalog.all": "All",
+      "catalog.mobile": "Mobile",
+      "catalog.crushing": "Crushing",
+      "catalog.screening": "Screening",
+      "catalog.washing": "Washing",
+      "catalog.parts": "Parts",
+      "catalog.search": "Search models",
+      "catalog.result": "Showing",
+      "catalog.units": "models",
+      "catalog.empty": "No matches. Try a different keyword.",
+      "catalog.inquiry": "Inquiry",
+      "catalog.quote": "Get quote",
+      "catalog.cta.title": "Need a different setup?",
+      "catalog.cta.copy": "Tell us ore type, capacity and site conditions — we will propose a suitable package.",
+      "catalog.cta.btn": "Submit inquiry →",
+      "faq.breadcrumb": "Home  /  FAQ",
+      "faq.eyebrow": "FAQ",
+      "faq.title": "Frequently asked questions",
+      "faq.copy": "Equipment scope, export markets, MOQ, quotes, payment, shipping, certifications and after-sales.",
+      "faq.q1": "What equipment do you supply?",
+      "faq.a1": "Crushing, screening, feeding, sand washing, dewatering, conveying and wear parts — for quarries, mines, aggregates and building materials projects.",
+      "faq.q2": "Where do you export?",
+      "faq.a2": "Worldwide — Asia, Europe, North and South America, the Middle East, Africa and Oceania.",
+      "faq.q3": "What is the minimum order quantity?",
+      "faq.a3": "Standard complete machines from one unit. Parts and custom items are flexible by agreement.",
+      "faq.q4": "How do I request a quote?",
+      "faq.a4": "Email or chat with model, capacity, feed and product size, and material data — or part drawings. Full-line packages can be engineered to your site.",
+      "faq.q5": "Which payment terms do you accept?",
+      "faq.a5": "T/T and L/C are standard. Other terms can be discussed per order.",
+      "faq.q6": "What shipping options are available?",
+      "faq.a6": "Sea, air and land. Common Incoterms: EXW, FOB, CIF, DDP. We support packing, export customs and shipping documents.",
+      "faq.q7": "What certifications can you provide?",
+      "faq.a7": "ISO 9001. CE files, material certificates and test reports on request. Requirements vary by product and destination — share model, type and country when you inquire.",
+      "faq.q8": "Do you support installation and after-sales?",
+      "faq.a8": "Yes — manuals, remote guidance and troubleshooting. Our team helps diagnose issues on machines and wear parts.",
+      "faq.q9": "Can you customize equipment?",
+      "faq.a9": "Yes. We build to your parameters, drawings, samples and site conditions.",
+      "faq.q10": "How can I verify quality before a large order?",
+      "faq.a10": "Samples or small batches for evaluation. Large orders can include third-party inspection with material and test reports.",
+      "faq.cta.title": "Still have questions?",
+      "faq.cta.copy": "Share your requirements — an advisor will reply within 24 hours.",
+      "faq.cta.btn": "Submit inquiry →"
+    }
+  };
+
+  function applyLang(lang) {
+    const dict = I18N[lang] || I18N.zh;
+    document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+    document.documentElement.classList.toggle('lang-en', lang === 'en');
+    document.documentElement.classList.toggle('lang-zh', lang !== 'en');
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      // Skip containers that only wrap other i18n nodes
+      if (el.querySelector('[data-i18n]')) return;
+      const key = el.getAttribute('data-i18n');
+      if (dict[key] != null) {
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = dict[key];
+        } else if (el.tagName === 'OPTION') {
+          el.textContent = dict[key];
+        } else {
+          const text = dict[key];
+          if (text.indexOf('\n') >= 0) {
+            el.innerHTML = text.split('\n').join('<br />');
+          } else {
+            el.textContent = text;
+          }
+        }
+      }
+    });
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      const active = b.dataset.lang === lang;
+      b.classList.toggle('active', active);
+      b.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+    try { localStorage.setItem('minelink-lang', lang); } catch(e) {}
+  }
+
+  function init() {
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+    });
+    let lang = 'zh';
+    try { lang = localStorage.getItem('minelink-lang') || 'zh'; } catch(e) {}
+    applyLang(lang);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Expose for catalog dynamic render
+  window.MinelinkI18n = { applyLang, I18N, t: (key) => {
+    const lang = (function(){ try { return localStorage.getItem('minelink-lang') || 'zh'; } catch(e){ return 'zh'; }})();
+    return (I18N[lang] || I18N.zh)[key] || key;
+  }};
+})();
+</script>
+
 </body>
 </html>
