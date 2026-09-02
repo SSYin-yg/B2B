@@ -1,0 +1,66 @@
+/* Equipment detail page */
+.product-page{padding:48px 0 72px}
+.product-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:start}
+
+/* Gallery */
+.gallery{position:sticky;top:96px}
+.gallery-main{position:relative;aspect-ratio:4/3;background:#1d3038;border:1px solid #e3e8e7;overflow:hidden;display:grid;place-items:center}
+.gallery-main img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-main .placeholder{position:absolute;inset:0;display:grid;place-items:center;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(244,187,33,.14) 22px 24px),#1d3038;color:rgba(255,255,255,.35);font:700 64px "Barlow Condensed";letter-spacing:2px}
+.gallery-thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.gallery-thumbs button{width:72px;height:54px;padding:0;border:2px solid transparent;background:#1d3038;cursor:pointer;overflow:hidden;position:relative}
+.gallery-thumbs button.active,.gallery-thumbs button:hover{border-color:var(--yellow)}
+.gallery-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-thumbs .thumb-ph{position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 10px,rgba(244,187,33,.12) 10px 12px),#263941}
+
+/* Info panel */
+.product-type{font:700 12px "Barlow Condensed";letter-spacing:1.6px;color:#a8680a;margin:0 0 8px}
+.product-title{font-size:32px;letter-spacing:-.8px;margin:0 0 12px;line-height:1.25}
+.product-desc{color:#5e6b73;font-size:14px;line-height:1.85;margin:0 0 22px}
+.product-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+.product-actions .primary{padding:12px 22px}
+.product-actions .ghost{padding:11px 18px;border:1px solid #cfd6d8;background:#fff;color:#1a2528;font-weight:700;font-size:14px;cursor:pointer;transition:border-color 160ms var(--ease-out),color 160ms var(--ease-out)}
+.product-actions .ghost:hover{border-color:#c77a0c;color:#8e5704}
+
+.block-title{font-size:15px;font-weight:800;margin:0 0 12px;letter-spacing:.2px}
+.feature-list{margin:0 0 28px;padding:0;list-style:none;display:grid;gap:10px}
+.feature-list li{font-size:14px;color:#3d4a50;padding-left:22px;position:relative;line-height:1.5}
+.feature-list li:before{content:"✓";position:absolute;left:0;color:#c9790b;font-weight:800}
+
+.specs{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:8px}
+.specs th,.specs td{padding:11px 14px;text-align:left;border:1px solid #e3e8e7}
+.specs th{background:#f3f5f3;color:#5a686e;font-weight:600;width:38%}
+.specs td{background:#fff;color:#1a2528;font-weight:600}
+
+.product-note{margin-top:18px;font-size:12px;color:#809096;line-height:1.6}
+
+/* Related */
+.related{margin-top:56px;padding-top:40px;border-top:1px solid #e3e8e7}
+.related h2{font-size:22px;margin:0 0 18px}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.related-card{display:block;background:#fff;border:1px solid #e3e8e7;padding:0;overflow:hidden;transition:border-color 160ms var(--ease-out),transform 160ms var(--ease-out),box-shadow 160ms var(--ease-out);color:inherit}
+.related-card:hover{border-color:#e4b454;transform:translateY(-2px);box-shadow:0 10px 20px rgba(18,33,42,.07)}
+.related-card .rc-art{height:90px;background:#1d3038;position:relative}
+.related-card .rc-art img{width:100%;height:100%;object-fit:cover;display:block}
+.related-card .rc-art .ph{position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 16px,rgba(244,187,33,.14) 16px 18px),#1d3038}
+.related-card .rc-body{padding:14px 16px 16px}
+.related-card .rc-type{font:700 10px "Barlow Condensed";letter-spacing:1.2px;color:#a8680a}
+.related-card h3{margin:4px 0 0;font-size:15px;line-height:1.35}
+
+.product-missing{padding:80px 0;text-align:center}
+.product-missing h1{font-size:28px;margin:0 0 12px}
+.product-missing p{color:#67747a;margin:0 0 24px}
+
+html[lang="en"] .product-title{max-width:18ch;letter-spacing:-.4px}
+
+@media(max-width:900px){
+  .product-layout{grid-template-columns:1fr;gap:28px}
+  .gallery{position:static}
+  .related-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .product-page{padding:32px 0 48px}
+  .product-title{font-size:24px}
+  .related-grid{grid-template-columns:1fr}
+  .gallery-thumbs button{width:64px;height:48px}
+}

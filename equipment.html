@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="矿联矿机设备详情：参数、特点与询价。" />
+  <title>设备详情 | 矿联矿机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/common.css" />
+  <link rel="stylesheet" href="assets/product.css" />
+</head>
+<body>
+  <div class="topbar"><div class="shell"><span class="topbar-left"><span data-i18n="topbar.tagline">专业矿用设备采购与服务平台</span></span><div class="topbar-right"><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div></div></div></div>
+  <header><div class="shell"><a href="index.html" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a href="index.html" data-i18n="nav.home">首页</a><a class="active" href="equipment-catalog.html" data-i18n="nav.catalog">设备目录</a><a href="index.html#solutions" data-i18n="nav.solutions">行业方案</a><a href="index.html#service" data-i18n="nav.service">服务支持</a><a href="faq.html" data-i18n="nav.faq">常见问题</a><a href="index.html#about" data-i18n="nav.about">关于我们</a><button type="button" class="nav-cta open-modal" data-i18n="nav.quote">获取报价</button></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
+
+  <main>
+    <section class="catalog-hero" style="padding:36px 0 28px">
+      <div class="shell">
+        <div class="breadcrumb" id="breadcrumb"><a href="index.html">首页</a>　/　<a href="equipment-catalog.html">设备目录</a>　/　<span id="bcName">—</span></div>
+      </div>
+    </section>
+
+    <section class="product-page">
+      <div class="shell" id="productRoot">
+        <!-- filled by JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell foot"><span>© 2025 Minelink Equipment. All rights reserved.</span><span><a href="index.html" data-i18n="footer.home">返回首页</a>　|　<a href="equipment-catalog.html" data-i18n="nav.catalog">设备目录</a>　|　sales@minelink.cn</span></div></footer>
+
+  <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2><span data-i18n="modal.title">获取专属设备方案</span></h2><p><span data-i18n="modal.copy">请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</span></p><form id="leadForm"><div class="form-grid"><input required placeholder="您的姓名 *" data-i18n="modal.name" /><input required placeholder="联系电话 / WhatsApp *" data-i18n="modal.phone" /><input class="full" type="email" placeholder="工作邮箱" data-i18n="modal.email" /><select class="full" id="productSelect"><option value="" data-i18n="modal.product">请选择意向设备</option><option data-i18n="modal.opt1">露天采掘设备</option><option data-i18n="modal.opt2">井下采矿设备</option><option data-i18n="modal.opt3">破碎筛分设备</option><option data-i18n="modal.opt4">输送与辅助设备</option><option data-i18n="modal.opt5">其他需求</option></select><input class="full" placeholder="项目所在国家 / 地区" data-i18n="modal.region" /></div><button class="primary" style="width:100%;margin-top:16px" type="submit"><span data-i18n="modal.submit">提交需求</span></button><div class="form-note"><span data-i18n="modal.note">提交即表示您同意我们为本次咨询联系您。</span></div><div class="success" id="success"><span data-i18n="modal.success">需求已提交，我们会在 24 小时内联系您。</span></div></form></div></div>
+
+  <script src="assets/equipment-data.js"></script>
+  <script src="assets/i18n.js" defer></script>
+  <script>
+    (function () {
+      var typeZh = { mobile: '移动破碎站', crushing: '破碎制砂', screening: '筛分输送', washing: '洗砂设备', parts: '易损件' };
+      var typeEn = { mobile: 'Mobile crushing', crushing: 'Crushing & sand', screening: 'Screening & feed', washing: 'Sand washing', parts: 'Wear parts' };
+
+      function lang() {
+        try { return localStorage.getItem('minelink-lang') || 'zh'; } catch (e) { return 'zh'; }
+      }
+      function isEn() { return lang() === 'en'; }
+
+      function findProduct(id) {
+        var list = window.MinelinkEquipment || [];
+        return list.find(function (p) { return p.id === id; }) || null;
+      }
+
+      function imgTag(src, alt) {
+        return '<img src="' + src + '" alt="' + (alt || '') + '" loading="lazy" onerror="this.style.display=\'none\';var p=this.nextElementSibling;if(p)p.style.display=\'grid\';" />';
+      }
+
+      function render(product) {
+        var root = document.getElementById('productRoot');
+        var bc = document.getElementById('bcName');
+        if (!product) {
+          document.title = (isEn() ? 'Not found' : '未找到设备') + ' | 矿联矿机';
+          bc.textContent = '—';
+          root.innerHTML = '<div class="product-missing"><h1>' + (isEn() ? 'Equipment not found' : '未找到该设备') + '</h1><p>' + (isEn() ? 'Please return to the catalog and choose a model.' : '请返回设备目录重新选择。') + '</p><a class="primary" href="equipment-catalog.html" style="display:inline-block">' + (isEn() ? 'Back to catalog' : '返回设备目录') + '</a></div>';
+          return;
+        }
+
+        var name = isEn() ? product.en : product.cn;
+        var typeLabel = (isEn() ? typeEn : typeZh)[product.type] || product.type;
+        var desc = isEn() ? product.desc_en : product.desc_zh;
+        var features = isEn() ? product.features_en : product.features_zh;
+        var images = (product.images && product.images.length) ? product.images : [];
+
+        document.title = name + ' | 矿联矿机';
+        bc.textContent = name;
+
+        var mainImg = images[0] || '';
+        var thumbs = images.map(function (src, i) {
+          return '<button type="button" class="' + (i === 0 ? 'active' : '') + '" data-src="' + src + '">' +
+            imgTag(src, name) + '<span class="thumb-ph" style="display:none"></span></button>';
+        }).join('');
+
+        var featureHtml = (features || []).map(function (f) { return '<li>' + f + '</li>'; }).join('');
+        var specsHtml = (product.specs || []).map(function (s) {
+          return '<tr><th>' + (isEn() ? s.k_en : s.k_zh) + '</th><td>' + s.v + '</td></tr>';
+        }).join('');
+
+        var related = (window.MinelinkEquipment || []).filter(function (p) {
+          return p.type === product.type && p.id !== product.id;
+        }).slice(0, 3);
+        var relatedHtml = related.map(function (p) {
+          var n = isEn() ? p.en : p.cn;
+          var t = (isEn() ? typeEn : typeZh)[p.type] || '';
+          var img = (p.images && p.images[0]) ? imgTag(p.images[0], n) + '<span class="ph" style="display:none"></span>' : '<span class="ph"></span>';
+          return '<a class="related-card" href="equipment.html?id=' + encodeURIComponent(p.id) + '">' +
+            '<div class="rc-art">' + img + '</div>' +
+            '<div class="rc-body"><div class="rc-type">' + t + '</div><h3>' + n + '</h3></div></a>';
+        }).join('');
+
+        root.innerHTML =
+          '<div class="product-layout">' +
+            '<div class="gallery">' +
+              '<div class="gallery-main" id="galleryMain">' +
+                (mainImg ? imgTag(mainImg, name) + '<div class="placeholder" style="display:none">' + product.id.toUpperCase().slice(0, 6) + '</div>' : '<div class="placeholder">' + product.id.toUpperCase().slice(0, 6) + '</div>') +
+              '</div>' +
+              (thumbs ? '<div class="gallery-thumbs" id="galleryThumbs">' + thumbs + '</div>' : '') +
+            '</div>' +
+            '<div class="product-info">' +
+              '<div class="product-type">' + typeLabel + '</div>' +
+              '<h1 class="product-title">' + name + '</h1>' +
+              '<p class="product-desc">' + desc + '</p>' +
+              '<div class="product-actions">' +
+                '<button type="button" class="primary open-modal" id="quoteThis">' + (isEn() ? 'Get a quote' : '获取报价') + '</button>' +
+                '<a class="ghost" href="equipment-catalog.html?filter=' + encodeURIComponent(product.type) + '">' + (isEn() ? 'More in this category' : '查看同类设备') + '</a>' +
+              '</div>' +
+              (featureHtml ? '<div class="block-title">' + (isEn() ? 'Highlights' : '产品特点') + '</div><ul class="feature-list">' + featureHtml + '</ul>' : '') +
+              (specsHtml ? '<div class="block-title">' + (isEn() ? 'Specifications' : '主要参数') + '</div><table class="specs"><tbody>' + specsHtml + '</tbody></table>' : '') +
+              '<p class="product-note">' + (isEn()
+                ? 'Specifications are typical ranges. Final configuration depends on ore, capacity and site conditions. Request a quote for a tailored proposal.'
+                : '以上参数为常见配置区间，最终方案需结合矿石、产能与场地条件确定。提交询价后顾问将为您出具专属配置。') + '</p>' +
+            '</div>' +
+          '</div>' +
+          (relatedHtml ? '<div class="related"><h2>' + (isEn() ? 'Related equipment' : '相关设备') + '</h2><div class="related-grid">' + relatedHtml + '</div></div>' : '');
+
+        // Thumb switch
+        var thumbsEl = document.getElementById('galleryThumbs');
+        var mainEl = document.getElementById('galleryMain');
+        if (thumbsEl && mainEl) {
+          thumbsEl.addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-src]');
+            if (!btn) return;
+            thumbsEl.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var src = btn.getAttribute('data-src');
+            mainEl.innerHTML = imgTag(src, name) + '<div class="placeholder" style="display:none">' + product.id.toUpperCase().slice(0, 6) + '</div>';
+          });
+        }
+
+        // Preselect product in modal
+        window.__currentProduct = { en: product.en, cn: product.cn };
+      }
+
+      function openModal() {
+        var modal = document.getElementById('modal');
+        var select = document.getElementById('productSelect');
+        var prev = select.querySelector('option[data-dynamic="1"]');
+        if (prev) prev.remove();
+        var cur = window.__currentProduct;
+        if (cur) {
+          var opt = document.createElement('option');
+          opt.value = cur.en;
+          opt.textContent = isEn() ? cur.en : cur.cn;
+          opt.setAttribute('data-dynamic', '1');
+          select.prepend(opt);
+          select.value = cur.en;
+        }
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+      function closeModal() {
+        var modal = document.getElementById('modal');
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      var id = new URLSearchParams(location.search).get('id');
+      render(findProduct(id));
+
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('.open-modal')) openModal();
+      });
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+      document.getElementById('modal').addEventListener('click', function (e) {
+        if (e.target.id === 'modal') closeModal();
+      });
+      document.getElementById('leadForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        document.getElementById('success').style.display = 'block';
+        e.target.querySelector('button[type="submit"]').textContent = isEn() ? 'Submitted' : '已提交';
+        e.target.querySelector('button[type="submit"]').disabled = true;
+      });
+      document.getElementById('menuToggle').addEventListener('click', function () {
+        document.getElementById('nav').classList.toggle('open');
+      });
+      document.addEventListener('minelink:lang', function () {
+        render(findProduct(id));
+      });
+    })();
+  </script>
+</body>
+</html>
