@@ -22,32 +22,50 @@
   </main>
   <footer><div class="shell foot"><span>© 2025 Minelink Equipment. All rights reserved.</span><span><a href="index.html"><span data-i18n="footer.home">返回首页</span></a>　|　<a href="faq.html"><span data-i18n="footer.faq">常见问题</span></a>　|　sales@minelink.cn</span></div></footer>
 
-  <!-- Quote modal: stays on current page -->
   <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2><span data-i18n="modal.title">获取专属设备方案</span></h2><p><span data-i18n="modal.copy">请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</span></p><form id="leadForm"><div class="form-grid"><input required placeholder="您的姓名 *" data-i18n="modal.name" /><input required placeholder="联系电话 / WhatsApp *" data-i18n="modal.phone" /><input class="full" type="email" placeholder="工作邮箱" data-i18n="modal.email" /><select class="full" id="productSelect"><option value="" data-i18n="modal.product">请选择意向设备</option><option data-i18n="modal.opt1">露天采掘设备</option><option data-i18n="modal.opt2">井下采矿设备</option><option data-i18n="modal.opt3">破碎筛分设备</option><option data-i18n="modal.opt4">输送与辅助设备</option><option data-i18n="modal.opt5">其他需求</option></select><input class="full" placeholder="项目所在国家 / 地区" data-i18n="modal.region" /></div><button class="primary" style="width:100%;margin-top:16px" type="submit"><span data-i18n="modal.submit">提交需求</span></button><div class="form-note"><span data-i18n="modal.note">提交即表示您同意我们为本次咨询联系您。</span></div><div class="success" id="success"><span data-i18n="modal.success">需求已提交，我们会在 24 小时内联系您。</span></div></form></div></div>
 
+  <script src="assets/equipment-data.js"></script>
   <script>
-    const equipment = [
-      ['Wheeled Jaw Crushing Station','轮胎式颚破移动站','mobile'],['Wheel-type Mobile Screening Station','轮胎式移动筛分站','mobile'],['Wheel-type Multi-cylinder Cone Mobile Crushing Station','轮胎式多缸圆锥破移动站','mobile'],['Wheel-type Impact Mobile Crushing Station','轮胎式反击破移动站','mobile'],['Wheel-type Single Cylinder Cone Mobile Crushing Station','轮胎式单缸圆锥破移动站','mobile'],['Crawler Impact Crusher Mobile Crushing Station','履带式反击破移动站','mobile'],['Crawler Jaw Crusher','履带式颚破移动站','mobile'],['Crawler Impact Mobile Crushing Station','履带式反击破碎站','mobile'],['Crawler Cone Mobile Crushing Station','履带式圆锥破移动站','mobile'],
-      ['Double Tooth Roll Crusher','双齿辊破碎机','crushing'],['Heavy Hammer Crusher','重锤式破碎机','crushing'],['Gyratory Crusher','旋回破碎机','crushing'],['Shaping Crusher','整形破碎机','crushing'],['Multi-Cylinder Hydraulic Cone Crusher','多缸液压圆锥破碎机','crushing'],['Double-Rotor Sand Making Machine','双转子制砂机','crushing'],['Single-Cylinder Hydraulic Cone Crusher','单缸液压圆锥破碎机','crushing'],['VSI Impact Crusher','VSI 立轴冲击式破碎机','crushing'],['PE Series Jaw Crusher (Standard)','PE 系列颚式破碎机（标准型）','crushing'],['C Type Jaw Crusher','C 型颚式破碎机','crushing'],
-      ['Belt Conveyor','皮带输送机','screening'],['Vibrating Dewatering Screen','振动脱水筛','screening'],['Linear Vibrating Screen','直线振动筛','screening'],['Circular Vibrating Screen','圆振动筛','screening'],['Vibrating Feeder','振动给料机','screening'],['Vibrating Screen','振动筛','screening'],
-      ['Double Spiral Sand Washer','双螺旋洗砂机','washing'],['Wheel-and-Scoop Sand Washer','轮斗式洗砂机','washing'],
-      ['Crusher Hammer Shaft','破碎机锤轴','parts'],['Crusher Liner','破碎机衬板','parts'],['Vibrating Screen Mesh','振动筛网','parts'],['Crusher Hammer Heads','破碎机锤头','parts']
-    ];
-    const labels={mobile:'移动破碎站',crushing:'破碎制砂',screening:'筛分输送',washing:'洗砂设备',parts:'易损件'};let selected='all';const grid=document.getElementById('catalogGrid'), count=document.getElementById('count'), search=document.getElementById('search');
+    const labels={mobile:'移动破碎站',crushing:'破碎制砂',screening:'筛分输送',washing:'洗砂设备',parts:'易损件'};
+    let selected='all';
+    const grid=document.getElementById('catalogGrid'), count=document.getElementById('count'), search=document.getElementById('search');
+
+    function equipmentList(){
+      return (window.MinelinkEquipment || []).map(function(p){
+        return { id:p.id, en:p.en, cn:p.cn, type:p.type, images:p.images||[] };
+      });
+    }
+
     function render(){
       const keyword=search.value.trim().toLowerCase();
       const lang=(function(){try{return localStorage.getItem('minelink-lang')||'zh'}catch(e){return 'zh'}})();
       const isEn = lang === 'en';
-      const items=equipment.filter(([en,cn,type])=>(selected==='all'||type===selected)&&((en+' '+cn).toLowerCase().includes(keyword)));
+      const all = equipmentList();
+      const items=all.filter(function(p){
+        return (selected==='all'||p.type===selected) && ((p.en+' '+p.cn).toLowerCase().includes(keyword));
+      });
       count.textContent=items.length;
       const t=window.MinelinkI18n?window.MinelinkI18n.t:function(k){return k};
       const typeLabels = isEn
         ? {mobile:'Mobile crushing',crushing:'Crushing & sand',screening:'Screening & feed',washing:'Sand washing',parts:'Wear parts'}
         : labels;
-      grid.innerHTML=items.length?items.map(([en,cn,type],i)=>{
-        const displayName = isEn ? en : cn;
-        return `<article class="card"><div class="card-art" data-index="${String(i+1).padStart(2,'0')}"></div><div class="card-content"><div class="type">${typeLabels[type]||type}</div><h2>${displayName}</h2></div><div class="card-foot"><span>${t('catalog.inquiry')}</span><button type="button" class="quote open-quote" data-product-en="${en}" data-product-cn="${cn}">${t('catalog.quote')}</button></div></article>`;
-      }).join(''):`<div class="empty">${t('catalog.empty')}</div>`;
+      grid.innerHTML=items.length?items.map(function(p,i){
+        const displayName = isEn ? p.en : p.cn;
+        const href = 'equipment.html?id=' + encodeURIComponent(p.id);
+        const idx = String(i+1).padStart(2,'0');
+        const cover = (p.images && p.images[0]) ? p.images[0] : '';
+        const artInner = cover
+          ? '<img src="'+cover+'" alt="'+displayName+'" loading="lazy" onerror="this.remove()" /><span class="card-art-fallback" data-index="'+idx+'"></span>'
+          : '';
+        return '<article class="card">' +
+          '<a class="card-link" href="'+href+'">' +
+            '<div class="card-art" data-index="'+idx+'">'+artInner+'</div>' +
+            '<div class="card-content"><div class="type">'+(typeLabels[p.type]||p.type)+'</div><h2>'+displayName+'</h2></div>' +
+          '</a>' +
+          '<div class="card-foot"><span>'+t('catalog.inquiry')+'</span>' +
+            '<button type="button" class="quote open-quote" data-product-en="'+p.en+'" data-product-cn="'+p.cn+'">'+t('catalog.quote')+'</button>' +
+          '</div></article>';
+      }).join(''):'<div class="empty">'+t('catalog.empty')+'</div>';
     }
     document.getElementById('filters').addEventListener('click',e=>{if(!e.target.matches('.filter'))return;document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');selected=e.target.dataset.filter;render()});search.addEventListener('input',render);
     const urlFilter = new URLSearchParams(location.search).get('filter');
@@ -59,7 +77,6 @@
     }
     render();
 
-    // Modal logic — stay on current page
     const modal = document.getElementById('modal');
     const productSelect = document.getElementById('productSelect');
 

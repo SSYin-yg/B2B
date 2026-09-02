@@ -11,9 +11,11 @@
 .card{background:#fff;border:1px solid #e3e8e7;min-height:225px;display:flex;flex-direction:column;justify-content:space-between;transition:border-color 200ms var(--ease-out),transform 200ms var(--ease-out),box-shadow 200ms var(--ease-out)}
 .card:hover{border-color:#e4b454;transform:translateY(-3px);box-shadow:0 12px 24px rgba(18,33,42,.08)}
 .card:active{transform:translateY(-1px) scale(.995)}
+.card-link{display:block;color:inherit;text-decoration:none;flex:1}
 .card-art{height:82px;background:#1d3038;position:relative;overflow:hidden}
-.card-art:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(244,187,33,.16) 22px 24px)}
-.card-art:after{content:attr(data-index);position:absolute;right:18px;bottom:-11px;color:rgba(255,255,255,.15);font:700 72px "Barlow Condensed";line-height:1}
+.card-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.card-art:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,rgba(244,187,33,.16) 22px 24px);z-index:0}
+.card-art:after{content:attr(data-index);position:absolute;right:18px;bottom:-11px;color:rgba(255,255,255,.15);font:700 72px "Barlow Condensed";line-height:1;z-index:0}
 .card:nth-child(5n+2) .card-art{background:#263941}.card:nth-child(5n+3) .card-art{background:#344149}
 .card:nth-child(5n+4) .card-art{background:#4a3d26}.card:nth-child(5n) .card-art{background:#243237}
 .card-content{padding:18px 19px 0}
@@ -22,7 +24,6 @@
 .card-foot{border-top:1px solid #edf0ef;margin-top:16px;padding:11px 19px;display:flex;justify-content:space-between;align-items:center}
 .card-foot span{font:600 12px "Barlow Condensed";letter-spacing:1.1px;color:#778389}
 
-/* Quote button — polished CTA */
 .quote{
   appearance:none;
   border:0;
