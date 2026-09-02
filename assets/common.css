@@ -35,6 +35,18 @@ footer{background:#0a1419;color:#9ba7ab;padding:42px 0 20px}
 .eyebrow{position:relative;z-index:1;color:var(--yellow);font:700 13px "Barlow Condensed";letter-spacing:2.3px;margin-top:32px}
 .catalog-hero h1{position:relative;z-index:1;font-size:42px;margin:8px 0 12px;letter-spacing:-1px}
 .catalog-hero p{position:relative;z-index:1;color:#c2cccf;max-width:600px;font-size:14px;line-height:1.8;margin:0}
+/* Modal (shared across pages) */
+.modal{display:none;position:fixed;z-index:50;inset:0;background:rgba(4,11,14,0);align-items:center;justify-content:center;padding:20px;transition:background 250ms var(--ease-out)}
+.modal.open{display:flex;background:rgba(4,11,14,.72)}
+.modal-card{width:min(500px,100%);background:#fff;padding:34px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3);transform:scale(.95);opacity:0;transition:transform 250ms var(--ease-out),opacity 250ms var(--ease-out)}
+.modal.open .modal-card{transform:scale(1);opacity:1}
+.modal-card h2{margin:0 0 5px;font-size:25px}.modal-card p{margin:0 0 20px;color:#69757a;font-size:13px}
+.close{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:27px;cursor:pointer;color:#647177}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full{grid-column:1/-1}
+.form-grid input,.form-grid select{width:100%;padding:11px 12px;border:1px solid #d8dedf;outline:none}
+.form-grid input:focus,.form-grid select:focus{border-color:#c77a0c}
+.form-note{font-size:11px;color:#809096;margin-top:12px}
+.success{display:none;background:#eef6ea;color:#34672c;padding:12px;margin-top:14px;font-size:13px}
 html[lang="en"] body{letter-spacing:.01em}
 html[lang="en"] h1{letter-spacing:-.5px;line-height:1.2}
 html[lang="en"] nav{gap:22px}
@@ -55,4 +67,5 @@ html[lang="en"] .cta h2{letter-spacing:-.4px}
   .nav-cta{padding:9px 11px;font-size:12px}
   .catalog-hero{padding:44px 0}.catalog-hero h1{font-size:30px}
   .foot{flex-direction:column}
+  .form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}
 }

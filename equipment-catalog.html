@@ -13,14 +13,18 @@
   <link rel="stylesheet" href="assets/catalog.css" />
 </head>
 <body>
-  <div class="topbar"><div class="shell"><span class="topbar-left"><span data-i18n="topbar.tagline">专业矿用设备采购与服务平台</span></span><div class="topbar-right"><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div></div></div></div></div>
-  <header><div class="shell"><a href="index.html" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a href="index.html" data-i18n="nav.home">首页</a><a class="active" href="equipment-catalog.html" data-i18n="nav.catalog">设备目录</a><a href="index.html#solutions" data-i18n="nav.solutions">行业方案</a><a href="index.html#service" data-i18n="nav.service">服务支持</a><a href="faq.html" data-i18n="nav.faq"><span data-i18n="footer.faq">常见问题</span></a><a href="index.html#about" data-i18n="nav.about">关于我们</a><a class="nav-cta" href="index.html#products" data-i18n="nav.quote">获取报价</a></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
+  <div class="topbar"><div class="shell"><span class="topbar-left"><span data-i18n="topbar.tagline">专业矿用设备采购与服务平台</span></span><div class="topbar-right"><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div></div></div></div>
+  <header><div class="shell"><a href="index.html" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a href="index.html" data-i18n="nav.home">首页</a><a class="active" href="equipment-catalog.html" data-i18n="nav.catalog">设备目录</a><a href="index.html#solutions" data-i18n="nav.solutions">行业方案</a><a href="index.html#service" data-i18n="nav.service">服务支持</a><a href="faq.html" data-i18n="nav.faq"><span data-i18n="footer.faq">常见问题</span></a><a href="index.html#about" data-i18n="nav.about">关于我们</a><button type="button" class="nav-cta open-modal" data-i18n="nav.quote">获取报价</button></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
   <main>
     <section class="catalog-hero"><div class="shell"><div class="breadcrumb" data-i18n="catalog.breadcrumb"><a href="index.html">首页</a>　/　设备目录</div><div class="eyebrow"><span data-i18n="catalog.eyebrow">EQUIPMENT CATALOG</span></div><h1><span data-i18n="catalog.title">矿山破碎筛分设备目录</span></h1><p><span data-i18n="catalog.copy">收录 31 款矿山设备与易损件，覆盖移动破碎、固定破碎制砂、筛分洗砂、输送给料等核心环节。点击设备即可发起报价咨询。</span></p></div></section>
     <section class="catalog-body"><div class="shell"><div class="tools"><div class="filters" id="filters"><button class="filter active" data-filter="all" data-i18n="catalog.all">全部设备</button><button class="filter" data-filter="mobile" data-i18n="catalog.mobile">移动破碎站</button><button class="filter" data-filter="crushing" data-i18n="catalog.crushing">破碎制砂</button><button class="filter" data-filter="screening" data-i18n="catalog.screening">筛分输送</button><button class="filter" data-filter="washing" data-i18n="catalog.washing">洗砂设备</button><button class="filter" data-filter="parts" data-i18n="catalog.parts">易损件</button></div><input class="search" id="search" placeholder="搜索设备名称" data-i18n="catalog.search" aria-label="搜索设备名称" /></div><p class="result-line"><span data-i18n="catalog.result">当前展示</span> <strong id="count">31</strong> <span data-i18n="catalog.units">款设备</span></p><div class="product-grid" id="catalogGrid"></div></div></section>
-    <section class="cta"><div class="shell"><div><h2><span data-i18n="catalog.cta.title">找不到适合的设备？</span></h2><p><span data-i18n="catalog.cta.copy">告诉我们矿石类型、产能与场地条件，我们将为您推荐合适的设备组合。</span></p></div><a href="index.html#products"><span data-i18n="catalog.cta.btn">提交采购需求 →</span></a></div></section>
+    <section class="cta"><div class="shell"><div><h2><span data-i18n="catalog.cta.title">找不到适合的设备？</span></h2><p><span data-i18n="catalog.cta.copy">告诉我们矿石类型、产能与场地条件，我们将为您推荐合适的设备组合。</span></p></div><button type="button" class="primary open-modal"><span data-i18n="catalog.cta.btn">提交采购需求 →</span></button></div></section>
   </main>
   <footer><div class="shell foot"><span>© 2025 Minelink Equipment. All rights reserved.</span><span><a href="index.html"><span data-i18n="footer.home">返回首页</span></a>　|　<a href="faq.html"><span data-i18n="footer.faq">常见问题</span></a>　|　sales@minelink.cn</span></div></footer>
+
+  <!-- Quote modal: stays on current page -->
+  <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2><span data-i18n="modal.title">获取专属设备方案</span></h2><p><span data-i18n="modal.copy">请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</span></p><form id="leadForm"><div class="form-grid"><input required placeholder="您的姓名 *" data-i18n="modal.name" /><input required placeholder="联系电话 / WhatsApp *" data-i18n="modal.phone" /><input class="full" type="email" placeholder="工作邮箱" data-i18n="modal.email" /><select class="full" id="productSelect"><option value="" data-i18n="modal.product">请选择意向设备</option><option data-i18n="modal.opt1">露天采掘设备</option><option data-i18n="modal.opt2">井下采矿设备</option><option data-i18n="modal.opt3">破碎筛分设备</option><option data-i18n="modal.opt4">输送与辅助设备</option><option data-i18n="modal.opt5">其他需求</option></select><input class="full" placeholder="项目所在国家 / 地区" data-i18n="modal.region" /></div><button class="primary" style="width:100%;margin-top:16px" type="submit"><span data-i18n="modal.submit">提交需求</span></button><div class="form-note"><span data-i18n="modal.note">提交即表示您同意我们为本次咨询联系您。</span></div><div class="success" id="success"><span data-i18n="modal.success">需求已提交，我们会在 24 小时内联系您。</span></div></form></div></div>
+
   <script>
     const equipment = [
       ['Wheeled Jaw Crushing Station','轮胎式颚破移动站','mobile'],['Wheel-type Mobile Screening Station','轮胎式移动筛分站','mobile'],['Wheel-type Multi-cylinder Cone Mobile Crushing Station','轮胎式多缸圆锥破移动站','mobile'],['Wheel-type Impact Mobile Crushing Station','轮胎式反击破移动站','mobile'],['Wheel-type Single Cylinder Cone Mobile Crushing Station','轮胎式单缸圆锥破移动站','mobile'],['Crawler Impact Crusher Mobile Crushing Station','履带式反击破移动站','mobile'],['Crawler Jaw Crusher','履带式颚破移动站','mobile'],['Crawler Impact Mobile Crushing Station','履带式反击破碎站','mobile'],['Crawler Cone Mobile Crushing Station','履带式圆锥破移动站','mobile'],
@@ -37,18 +41,15 @@
       const items=equipment.filter(([en,cn,type])=>(selected==='all'||type===selected)&&((en+' '+cn).toLowerCase().includes(keyword)));
       count.textContent=items.length;
       const t=window.MinelinkI18n?window.MinelinkI18n.t:function(k){return k};
-      // Strict language separation: category labels
       const typeLabels = isEn
         ? {mobile:'Mobile crushing',crushing:'Crushing & sand',screening:'Screening & feed',washing:'Sand washing',parts:'Wear parts'}
         : labels;
       grid.innerHTML=items.length?items.map(([en,cn,type],i)=>{
-        // Chinese page: Chinese name only; English page: English name only
         const displayName = isEn ? en : cn;
-        return `<article class="card"><div class="card-art" data-index="${String(i+1).padStart(2,'0')}"></div><div class="card-content"><div class="type">${typeLabels[type]||type}</div><h2>${displayName}</h2></div><div class="card-foot"><span>${t('catalog.inquiry')}</span><a class="quote" href="index.html?product=${encodeURIComponent(en)}#products">${t('catalog.quote')}</a></div></article>`;
+        return `<article class="card"><div class="card-art" data-index="${String(i+1).padStart(2,'0')}"></div><div class="card-content"><div class="type">${typeLabels[type]||type}</div><h2>${displayName}</h2></div><div class="card-foot"><span>${t('catalog.inquiry')}</span><button type="button" class="quote open-quote" data-product-en="${en}" data-product-cn="${cn}">${t('catalog.quote')} →</button></div></article>`;
       }).join(''):`<div class="empty">${t('catalog.empty')}</div>`;
     }
     document.getElementById('filters').addEventListener('click',e=>{if(!e.target.matches('.filter'))return;document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');selected=e.target.dataset.filter;render()});search.addEventListener('input',render);
-    // Support deep-link ?filter=mobile|crushing|screening|washing|parts
     const urlFilter = new URLSearchParams(location.search).get('filter');
     if(urlFilter && labels[urlFilter]){
       selected = urlFilter;
@@ -57,9 +58,56 @@
       });
     }
     render();
-  </script>
 
-  
+    // Modal logic — stay on current page
+    const modal = document.getElementById('modal');
+    const productSelect = document.getElementById('productSelect');
+
+    function openModal(productEn, productCn) {
+      // Remove any previously injected product option
+      const prev = productSelect.querySelector('option[data-dynamic="1"]');
+      if (prev) prev.remove();
+      if (productEn) {
+        const lang = (function(){try{return localStorage.getItem('minelink-lang')||'zh'}catch(e){return 'zh'}})();
+        const label = lang === 'en' ? productEn : (productCn || productEn);
+        const opt = document.createElement('option');
+        opt.value = productEn;
+        opt.textContent = label;
+        opt.setAttribute('data-dynamic', '1');
+        productSelect.prepend(opt);
+        productSelect.value = productEn;
+      } else {
+        productSelect.value = '';
+      }
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('.open-modal').forEach(function(btn){
+      btn.addEventListener('click', function(){ openModal(); });
+    });
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+
+    // Quote buttons inside dynamically rendered cards (event delegation)
+    grid.addEventListener('click', function(e){
+      const btn = e.target.closest('.open-quote');
+      if (!btn) return;
+      openModal(btn.dataset.productEn, btn.dataset.productCn);
+    });
+
+    document.getElementById('leadForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      document.getElementById('success').style.display = 'block';
+      e.target.querySelector('button[type="submit"]').textContent = '已提交';
+      e.target.querySelector('button[type="submit"]').disabled = true;
+    });
+  </script>
 
   <script src="assets/i18n.js" defer></script>
   <script>
