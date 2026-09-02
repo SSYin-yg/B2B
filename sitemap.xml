@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core pages — base: https://ssyin-yg.github.io/B2B/  (change if custom domain) -->
+  <url>
+    <loc>https://ssyin-yg.github.io/B2B/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ssyin-yg.github.io/B2B/index.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ssyin-yg.github.io/B2B/equipment-catalog.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://ssyin-yg.github.io/B2B/faq.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Equipment detail pages -->
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheeled-jaw</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheeled-screen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheeled-multi-cone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheeled-impact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheeled-single-cone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=crawler-impact-crusher</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=crawler-jaw</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=crawler-impact</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=crawler-cone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=double-tooth-roll</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=heavy-hammer</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=gyratory</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=shaping</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=multi-cylinder-cone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=double-rotor-sand</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=single-cylinder-cone</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=vsi</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=pe-jaw</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=c-jaw</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=belt-conveyor</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=dewatering-screen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=linear-screen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=circular-screen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=vibrating-feeder</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=vibrating-screen</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=double-spiral-washer</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=wheel-scoop-washer</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=hammer-shaft</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=crusher-liner</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=screen-mesh</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://ssyin-yg.github.io/B2B/equipment.html?id=hammer-heads</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+</urlset>

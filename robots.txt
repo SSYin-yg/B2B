@@ -1,0 +1,63 @@
+# Minelink Equipment — allow all search engines & AI crawlers
+# https://github.com/SSYin-yg/B2B
+
+User-agent: *
+Allow: /
+
+# Explicit allow for major AI / LLM crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Sogou
+Allow: /
+
+User-agent: 360Spider
+Allow: /
+
+# Do not block assets needed for rendering
+Allow: /assets/
+
+# Sitemap (update host if you use a custom domain)
+Sitemap: https://ssyin-yg.github.io/B2B/sitemap.xml
