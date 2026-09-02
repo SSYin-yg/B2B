@@ -21,7 +21,48 @@
 .card h2{margin:6px 0 6px;font-size:18px;line-height:1.36;letter-spacing:-.3px}
 .card-foot{border-top:1px solid #edf0ef;margin-top:16px;padding:11px 19px;display:flex;justify-content:space-between;align-items:center}
 .card-foot span{font:600 12px "Barlow Condensed";letter-spacing:1.1px;color:#778389}
-.quote{font-size:12px;font-weight:800;color:#a76706;transition:color 160ms var(--ease-out)}.quote:hover{color:#8e5704}.quote:after{content:'  →';font-size:16px}
+
+/* Quote button — polished CTA */
+.quote{
+  appearance:none;
+  border:0;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 14px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.02em;
+  color:#1a2528;
+  background:var(--yellow);
+  border-radius:2px;
+  box-shadow:0 1px 0 rgba(0,0,0,.06);
+  transition:background 160ms var(--ease-out),transform 160ms var(--ease-out),box-shadow 160ms var(--ease-out);
+}
+.quote::after{
+  content:'→';
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+  transition:transform 160ms var(--ease-out);
+}
+.quote:hover{
+  background:#ffc92f;
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(244,187,33,.35);
+}
+.quote:hover::after{
+  transform:translateX(3px);
+}
+.quote:active{
+  transform:scale(.97);
+  box-shadow:none;
+}
+.card:hover .quote{
+  background:#ffc92f;
+}
+
 .empty{padding:60px 0;text-align:center;grid-column:1/-1;color:#708087;background:#fff;border:1px dashed #ccd5d5}
 .cta{padding:44px 0}
 html[lang="en"] .filter{padding:8px 12px;font-size:12.5px}

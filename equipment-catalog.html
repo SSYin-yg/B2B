@@ -46,7 +46,7 @@
         : labels;
       grid.innerHTML=items.length?items.map(([en,cn,type],i)=>{
         const displayName = isEn ? en : cn;
-        return `<article class="card"><div class="card-art" data-index="${String(i+1).padStart(2,'0')}"></div><div class="card-content"><div class="type">${typeLabels[type]||type}</div><h2>${displayName}</h2></div><div class="card-foot"><span>${t('catalog.inquiry')}</span><button type="button" class="quote open-quote" data-product-en="${en}" data-product-cn="${cn}">${t('catalog.quote')} →</button></div></article>`;
+        return `<article class="card"><div class="card-art" data-index="${String(i+1).padStart(2,'0')}"></div><div class="card-content"><div class="type">${typeLabels[type]||type}</div><h2>${displayName}</h2></div><div class="card-foot"><span>${t('catalog.inquiry')}</span><button type="button" class="quote open-quote" data-product-en="${en}" data-product-cn="${cn}">${t('catalog.quote')}</button></div></article>`;
       }).join(''):`<div class="empty">${t('catalog.empty')}</div>`;
     }
     document.getElementById('filters').addEventListener('click',e=>{if(!e.target.matches('.filter'))return;document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');selected=e.target.dataset.filter;render()});search.addEventListener('input',render);
@@ -64,7 +64,6 @@
     const productSelect = document.getElementById('productSelect');
 
     function openModal(productEn, productCn) {
-      // Remove any previously injected product option
       const prev = productSelect.querySelector('option[data-dynamic="1"]');
       if (prev) prev.remove();
       if (productEn) {
@@ -94,7 +93,6 @@
     document.getElementById('closeModal').addEventListener('click', closeModal);
     modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
 
-    // Quote buttons inside dynamically rendered cards (event delegation)
     grid.addEventListener('click', function(e){
       const btn = e.target.closest('.open-quote');
       if (!btn) return;
