@@ -54,35 +54,6 @@
         return '<img src="' + src + '" alt="' + (alt || '') + '" loading="lazy" onerror="this.style.display=\'none\';var p=this.nextElementSibling;if(p)p.style.display=\'grid\';" />';
       }
 
-      function escapeHtml(s) {
-        return String(s == null ? '' : s)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
-      }
-
-      function renderModelTables(tables) {
-        if (!tables || !tables.length) return '';
-        var en = isEn();
-        return tables.map(function (t) {
-          var title = en ? (t.title_en || t.title_zh) : (t.title_zh || t.title_en);
-          var cols = t.columns || [];
-          var head = cols.map(function (c) {
-            return '<th>' + escapeHtml(en ? c.en : c.zh) + '</th>';
-          }).join('');
-          var body = (t.rows || []).map(function (row) {
-            return '<tr>' + row.map(function (cell) {
-              return '<td>' + escapeHtml(cell) + '</td>';
-            }).join('') + '</tr>';
-          }).join('');
-          return '<div class="model-table-wrap">' +
-            '<div class="block-title">' + escapeHtml(title) + '</div>' +
-            '<div class="model-table-scroll"><table class="model-table"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div>' +
-          '</div>';
-        }).join('');
-      }
-
       function render(product) {
         var root = document.getElementById('productRoot');
         var bc = document.getElementById('bcName');
@@ -108,11 +79,10 @@
             imgTag(src, name) + '<span class="thumb-ph" style="display:none"></span></button>';
         }).join('');
 
-        var featureHtml = (features || []).map(function (f) { return '<li>' + escapeHtml(f) + '</li>'; }).join('');
+        var featureHtml = (features || []).map(function (f) { return '<li>' + f + '</li>'; }).join('');
         var specsHtml = (product.specs || []).map(function (s) {
-          return '<tr><th>' + escapeHtml(isEn() ? s.k_en : s.k_zh) + '</th><td>' + escapeHtml(s.v) + '</td></tr>';
+          return '<tr><th>' + (isEn() ? s.k_en : s.k_zh) + '</th><td>' + s.v + '</td></tr>';
         }).join('');
-        var modelTablesHtml = renderModelTables(product.modelTables);
 
         var related = (window.MinelinkEquipment || []).filter(function (p) {
           return p.type === product.type && p.id !== product.id;
@@ -123,7 +93,7 @@
           var img = (p.images && p.images[0]) ? imgTag(p.images[0], n) + '<span class="ph" style="display:none"></span>' : '<span class="ph"></span>';
           return '<a class="related-card" href="equipment.html?id=' + encodeURIComponent(p.id) + '">' +
             '<div class="rc-art">' + img + '</div>' +
-            '<div class="rc-body"><div class="rc-type">' + t + '</div><h3>' + escapeHtml(n) + '</h3></div></a>';
+            '<div class="rc-body"><div class="rc-type">' + t + '</div><h3>' + n + '</h3></div></a>';
         }).join('');
 
         root.innerHTML =
@@ -136,22 +106,22 @@
             '</div>' +
             '<div class="product-info">' +
               '<div class="product-type">' + typeLabel + '</div>' +
-              '<h1 class="product-title">' + escapeHtml(name) + '</h1>' +
-              '<p class="product-desc">' + escapeHtml(desc) + '</p>' +
+              '<h1 class="product-title">' + name + '</h1>' +
+              '<p class="product-desc">' + desc + '</p>' +
               '<div class="product-actions">' +
                 '<button type="button" class="primary open-modal" id="quoteThis">' + (isEn() ? 'Get a quote' : '获取报价') + '</button>' +
                 '<a class="ghost" href="equipment-catalog.html?filter=' + encodeURIComponent(product.type) + '">' + (isEn() ? 'More in this category' : '查看同类设备') + '</a>' +
               '</div>' +
               (featureHtml ? '<div class="block-title">' + (isEn() ? 'Highlights' : '产品特点') + '</div><ul class="feature-list">' + featureHtml + '</ul>' : '') +
-              (specsHtml ? '<div class="block-title">' + (isEn() ? 'Key parameters' : '主要参数') + '</div><table class="specs"><tbody>' + specsHtml + '</tbody></table>' : '') +
+              (specsHtml ? '<div class="block-title">' + (isEn() ? 'Specifications' : '主要参数') + '</div><table class="specs"><tbody>' + specsHtml + '</tbody></table>' : '') +
               '<p class="product-note">' + (isEn()
                 ? 'Specifications are typical ranges. Final configuration depends on ore, capacity and site conditions. Request a quote for a tailored proposal.'
                 : '以上参数为常见配置区间，最终方案需结合矿石、产能与场地条件确定。提交询价后顾问将为您出具专属配置。') + '</p>' +
             '</div>' +
           '</div>' +
-          (modelTablesHtml ? '<div class="model-section">' + modelTablesHtml + '</div>' : '') +
           (relatedHtml ? '<div class="related"><h2>' + (isEn() ? 'Related equipment' : '相关设备') + '</h2><div class="related-grid">' + relatedHtml + '</div></div>' : '');
 
+        // Thumb switch
         var thumbsEl = document.getElementById('galleryThumbs');
         var mainEl = document.getElementById('galleryMain');
         if (thumbsEl && mainEl) {
@@ -165,6 +135,7 @@
           });
         }
 
+        // Preselect product in modal
         window.__currentProduct = { en: product.en, cn: product.cn };
       }
 
