@@ -1,0 +1,92 @@
+{
+  "kind": "collectionType",
+  "collectionName": "equipments",
+  "info": {
+    "singularName": "equipment",
+    "pluralName": "equipments",
+    "displayName": "设备",
+    "description": "设备目录（含中英文名称、规格参数、SEO 等）"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "slug": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "displayName": "URL 标识 (slug)"
+    },
+    "name_cn": {
+      "type": "string",
+      "required": true,
+      "displayName": "中文名称"
+    },
+    "name_en": {
+      "type": "string",
+      "required": true,
+      "displayName": "英文名称"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "mobile",
+        "crushing",
+        "screening",
+        "washing",
+        "parts"
+      ],
+      "required": true,
+      "displayName": "设备类别",
+      "enumNames": ["移动破碎", "破碎设备", "筛分设备", "洗选设备", "配件"]
+    },
+    "images": {
+      "type": "json",
+      "displayName": "图片"
+    },
+    "desc_zh": {
+      "type": "text",
+      "displayName": "中文描述"
+    },
+    "desc_en": {
+      "type": "text",
+      "displayName": "英文描述"
+    },
+    "features_zh": {
+      "type": "json",
+      "displayName": "中文特点"
+    },
+    "features_en": {
+      "type": "json",
+      "displayName": "英文特点"
+    },
+    "specs": {
+      "type": "json",
+      "displayName": "规格参数"
+    },
+    "model_tables": {
+      "type": "json",
+      "displayName": "型号参数表"
+    },
+    "seo_title_zh": {
+      "type": "string",
+      "displayName": "SEO 标题（中文）"
+    },
+    "seo_title_en": {
+      "type": "string",
+      "displayName": "SEO 标题（英文）"
+    },
+    "seo_description_zh": {
+      "type": "text",
+      "displayName": "SEO 描述（中文）"
+    },
+    "seo_description_en": {
+      "type": "text",
+      "displayName": "SEO 描述（英文）"
+    },
+    "og_image": {
+      "type": "string",
+      "displayName": "社交分享图 URL"
+    }
+  }
+}

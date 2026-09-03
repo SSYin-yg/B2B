@@ -1,0 +1,43 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Strapi application",
+  "scripts": {
+    "build": "strapi build",
+    "console": "strapi console",
+    "deploy": "strapi deploy",
+    "dev": "strapi develop",
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "strapi": "strapi",
+    "migrate": "node scripts/migrate-equipment.js",
+    "build-admin-translations": "node scripts/build-admin-translations.js",
+    "prebuild": "npm run build-admin-translations",
+    "upgrade": "npx @strapi/upgrade latest",
+    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+  },
+  "dependencies": {
+    "@strapi/database": "5.52.3",
+    "@strapi/plugin-cloud": "5.52.3",
+    "@strapi/plugin-users-permissions": "5.52.3",
+    "@strapi/strapi": "5.52.3",
+    "better-sqlite3": "12.8.0",
+    "nodemailer": "^6.10.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.30.3",
+    "styled-components": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0 <=26.x.x",
+    "npm": ">=6.0.0"
+  },
+  "strapi": {
+    "uuid": "61dc8bac-7dd6-4837-9496-e99c8752f751",
+    "installId": "63c957cba1edefbecb936fa8a6080f564d39825e30dd0ffe5e1fd7bb8433d6ad"
+  },
+  "devDependencies": {
+    "mammoth": "^1.12.2"
+  }
+}

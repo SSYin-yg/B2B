@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "inquiries",
+  "info": {
+    "singularName": "inquiry",
+    "pluralName": "inquiries",
+    "displayName": "询盘",
+    "description": "客户询盘记录（含设备、联系方式、留言等）"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "equipment": {
+      "type": "string",
+      "displayName": "意向设备"
+    },
+    "customer_name": {
+      "type": "string",
+      "required": true,
+      "displayName": "客户姓名"
+    },
+    "email": {
+      "type": "email",
+      "displayName": "邮箱"
+    },
+    "whatsapp": {
+      "type": "string",
+      "displayName": "WhatsApp / 电话"
+    },
+    "country": {
+      "type": "string",
+      "displayName": "国家 / 地区"
+    },
+    "message": {
+      "type": "text",
+      "displayName": "留言"
+    },
+    "submitted_at": {
+      "type": "datetime",
+      "displayName": "提交时间"
+    },
+    "email_sent": {
+      "type": "boolean",
+      "default": false,
+      "displayName": "邮件已发送"
+    }
+  }
+}

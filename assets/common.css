@@ -43,8 +43,10 @@ footer{background:#0a1419;color:#9ba7ab;padding:42px 0 20px}
 .modal-card h2{margin:0 0 5px;font-size:25px}.modal-card p{margin:0 0 20px;color:#69757a;font-size:13px}
 .close{position:absolute;right:18px;top:14px;border:0;background:transparent;font-size:27px;cursor:pointer;color:#647177}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.form-grid .full{grid-column:1/-1}
-.form-grid input,.form-grid select{width:100%;padding:11px 12px;border:1px solid #d8dedf;outline:none}
-.form-grid input:focus,.form-grid select:focus{border-color:#c77a0c}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;padding:11px 12px;border:1px solid #d8dedf;outline:none;font-family:inherit;font-size:inherit}
+.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{border-color:#c77a0c}
+.form-grid textarea{resize:vertical;min-height:64px}
+.form-error{display:none;background:#fdeeea;color:#a13c26;padding:10px 12px;margin-top:12px;font-size:12px}
 .form-note{font-size:11px;color:#809096;margin-top:12px}
 .success{display:none;background:#eef6ea;color:#34672c;padding:12px;margin-top:14px;font-size:13px}
 html[lang="en"] body{letter-spacing:.01em}

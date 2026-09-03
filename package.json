@@ -1,0 +1,14 @@
+{
+  "name": "minelink-b2b",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Minelink B2B 静态站点 + Strapi 后台",
+  "scripts": {
+    "build-pages": "node scripts/build-pages.js",
+    "serve": "node scripts/serve.js 3000",
+    "migrate": "npm --prefix backend run migrate",
+    "develop": "npm --prefix backend run develop",
+    "build": "npm --prefix backend run build",
+    "start": "npm --prefix backend run start"
+  }
+}

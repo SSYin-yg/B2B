@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{{SEO_DESCRIPTION}}" />
+  <title>{{SEO_TITLE}}</title>
+  <link rel="canonical" href="{{CANONICAL}}" />
+  <link rel="alternate" hreflang="zh-CN" href="{{HREFLANG_ZH}}" />
+  <link rel="alternate" hreflang="en" href="{{HREFLANG_EN}}" />
+  <link rel="alternate" hreflang="x-default" href="{{HREFLANG_ZH}}" />
+  <meta property="og:type" content="product" />
+  <meta property="og:site_name" content="矿联矿机" />
+  <meta property="og:title" content="{{OG_TITLE}}" />
+  <meta property="og:description" content="{{OG_DESCRIPTION}}" />
+  <meta property="og:url" content="{{CANONICAL}}" />
+  <meta property="og:locale" content="{{OG_LOCALE}}" />
+  <meta property="og:image" content="{{OG_IMAGE}}" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{OG_TITLE}}" />
+  <meta name="twitter:description" content="{{OG_DESCRIPTION}}" />
+  <meta name="twitter:image" content="{{OG_IMAGE}}" />
+  <script type="application/ld+json">{{PRODUCT_JSONLD}}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{REL}}/assets/common.css" />
+  <link rel="stylesheet" href="{{REL}}/assets/product.css" />
+</head>
+<body>
+  <div class="topbar"><div class="shell"><span class="topbar-left"><span data-i18n="topbar.tagline">专业矿用设备采购与服务平台</span></span><div class="topbar-right"><div class="lang-switch" role="group" aria-label="Language"><button type="button" class="lang-btn active" data-lang="zh" aria-pressed="true">中文</button><button type="button" class="lang-btn" data-lang="en" aria-pressed="false">EN</button></div></div></div></div>
+  <header><div class="shell"><a href="{{REL}}/index.html" class="brand"><span class="brand-mark">M</span><span>矿联矿机<small>MINELINK EQUIPMENT</small></span></a><nav id="nav"><a href="{{REL}}/index.html" data-i18n="nav.home">首页</a><a class="active" href="{{REL}}/equipment-catalog.html" data-i18n="nav.catalog">设备目录</a><a href="{{REL}}/solutions.html" data-i18n="nav.solutions">行业方案</a><a href="{{REL}}/support.html" data-i18n="nav.service">服务支持</a><a href="{{REL}}/faq.html" data-i18n="nav.faq">常见问题</a><a href="{{REL}}/about.html" data-i18n="nav.about">关于我们</a><button type="button" class="nav-cta open-modal" data-i18n="nav.quote">获取报价</button></nav><button class="mobile-menu" id="menuToggle" aria-label="打开菜单">☰</button></div></header>
+  <main>
+    <section class="catalog-hero" style="padding:36px 0 28px"><div class="shell"><div class="breadcrumb"><a href="{{REL}}/index.html" data-i18n="nav.home">首页</a>　/　<a href="{{REL}}/equipment-catalog.html" data-i18n="nav.catalog">设备目录</a>　/　<span id="bcName">{{NAME}}</span></div></div></section>
+    <section class="product-page"><div class="shell" id="productRoot">{{STATIC_PRODUCT_HTML}}</div></section>
+  </main>
+  <footer><div class="shell foot"><span>© 2025 Minelink Equipment. All rights reserved.</span><span><a href="{{REL}}/index.html" data-i18n="footer.home">返回首页</a>　|　<a href="{{REL}}/equipment-catalog.html" data-i18n="nav.catalog">设备目录</a>　|　sales@minelink.cn</span></div></footer>
+  <div class="modal" id="modal" aria-hidden="true"><div class="modal-card"><button class="close" id="closeModal" aria-label="关闭">×</button><h2><span data-i18n="modal.title">获取专属设备方案</span></h2><p><span data-i18n="modal.copy">请留下联系方式与采购意向，我们将安排矿机顾问为您服务。</span></p><form id="leadForm"><div class="form-grid"><input required name="customer_name" placeholder="您的姓名 *" data-i18n="modal.name" /><input name="whatsapp" placeholder="联系电话 / WhatsApp *" data-i18n="modal.phone" /><input class="full" type="email" name="email" placeholder="工作邮箱" data-i18n="modal.email" /><select class="full" name="equipment" id="productSelect"><option value="" data-i18n="modal.product">请选择意向设备</option><option data-i18n="modal.opt1">露天采掘设备</option><option data-i18n="modal.opt2">井下采矿设备</option><option data-i18n="modal.opt3">破碎筛分设备</option><option data-i18n="modal.opt4">输送与辅助设备</option><option data-i18n="modal.opt5">其他需求</option></select><input class="full" required name="country" placeholder="项目所在国家 / 地区" data-i18n="modal.region" /><textarea class="full" required name="message" data-i18n="modal.message" placeholder="需求描述（产量、物料、场地等）*"></textarea></div><button class="primary" style="width:100%;margin-top:16px" type="submit"><span data-i18n="modal.submit">提交需求</span></button><div class="form-error" id="formError"></div><div class="form-note"><span data-i18n="modal.note">提交即表示您同意我们为本次咨询联系您。</span></div><div class="success" id="success"><span data-i18n="modal.success">需求已提交，我们会在 24 小时内联系您。</span></div></form></div></div>
+  <script>window.__pageData = {{PAGE_DATA_JSON}};window.__pageLang = '{{LANG}}';{{API_BASE_SCRIPT}}</script>
+  <script src="{{REL}}/assets/product-render.js"></script>
+  <script src="{{REL}}/assets/i18n.js" defer></script>
+  <script src="{{REL}}/assets/inquiry-form.js" defer></script>
+  <script src="{{REL}}/assets/contact.js" defer></script>
+  <script>window.MineLinkProductInit('{{SLUG}}');</script>
+</body>
+</html>
