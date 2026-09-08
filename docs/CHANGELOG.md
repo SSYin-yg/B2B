@@ -31,6 +31,8 @@
 - **新增 `scripts/harden-nginx.sh`**：一键屏蔽点文件 / 内部目录（backend、backups、scripts、data、docs）/ 敏感后缀（log、sql、gz、sh、bak、save），带配置备份、nginx -t 失败自动回滚、执行后自动验证；**待用户 sudo 执行一次**
 - **GitHub 备份以全新零历史重建**：旧仓库已删除，本地重新初始提交（`f030695`），`.gitignore` 排除 `.env*`、`backups/`、日志、`.git.old/`，提交前密钥扫描干净——旧仓库历史含 `.env.bak` 密钥的问题随之消除
 - **新增 14 天周期 GitHub 异地备份**：`scripts/github-backup.sh`（cron 每日 04:05 调用，脚本内判断距上次成功推送满 14 天才推送，漏跑自动补），推送整站仓库（不含数据库与 .env）；待用户新建私有仓库并 `git remote add origin` 后即生效，机制说明见 docs/18 §7.5
+- **异地备份正式启用**：SSH 密钥（ed25519，`ssyin@b2b-server`）已生成并绑定 GitHub 账号 SSYin-yg；远端 `SSYin-yg/B2B` 以干净历史覆盖（README 占位被替换），首次推送 + 备份脚本实测成功（状态文件 `.last-github-backup` 生效）；docs/18 §7.5 补充开启/关闭/改周期操作
+- **nginx 加固已应用（2026-09-08，root 执行 harden-nginx.sh）**：`/.git/`、`/backups/db/`、日志、`/scripts/`、`/docs/` 等全部 403；`/admin/`、`/api/`、`/preview/`、图片、`{{ORIGIN}}` 替换复核不受影响；规则原文与 `.well-known` 注意事项写入 docs/17 §10、docs/10 §二
 
 ---
 
