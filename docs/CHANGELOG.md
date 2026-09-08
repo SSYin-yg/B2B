@@ -25,6 +25,13 @@
 - 手册同步：docs/18 §1/§8/§9（启停/排障/速查改为 `systemctl --user` + `journalctl --user`）、docs/17 §1/§2、docs/10 §一/§五/§六/§七、README 维护原则、docs/README 快速导航；新增服务模板 `docs/strapi-b2b.service.example`
 - 旧启动方式（`nohup npm start` + `strapi-restart.log`）弃用；验证：服务运行、后台 200、`/rebuild` 触发全量重建 31+31 页成功
 
+### 安全与异地备份（2026-09-08）
+
+- **公网暴露复查**（经 nginx 实测）：`/.git/`、`/.git.old/`、`/backups/db/*.sql.gz`（数据库全量备份！）、日志、`/scripts/`、`/docs/` 等均可下载；`/backend/.env` 仅因文件权限 600 挡住（nginx 本身会服务点文件）
+- **新增 `scripts/harden-nginx.sh`**：一键屏蔽点文件 / 内部目录（backend、backups、scripts、data、docs）/ 敏感后缀（log、sql、gz、sh、bak、save），带配置备份、nginx -t 失败自动回滚、执行后自动验证；**待用户 sudo 执行一次**
+- **GitHub 备份以全新零历史重建**：旧仓库已删除，本地重新初始提交（`f030695`），`.gitignore` 排除 `.env*`、`backups/`、日志、`.git.old/`，提交前密钥扫描干净——旧仓库历史含 `.env.bak` 密钥的问题随之消除
+- **新增 14 天周期 GitHub 异地备份**：`scripts/github-backup.sh`（cron 每日 04:05 调用，脚本内判断距上次成功推送满 14 天才推送，漏跑自动补），推送整站仓库（不含数据库与 .env）；待用户新建私有仓库并 `git remote add origin` 后即生效，机制说明见 docs/18 §7.5
+
 ---
 
 ## [1.4.0] - 2026-09-07

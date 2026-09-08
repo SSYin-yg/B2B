@@ -52,6 +52,8 @@ journalctl --user -u strapi-b2b -f             # Strapi 日志
 node scripts/build-pages.js                    # 手动全量重建
 systemctl status b2b-webhook                   # 预览/重建服务状态
 bash scripts/backup-db.sh                      # 手动数据库备份
+bash scripts/github-backup.sh                  # 手动触发 GitHub 异地备份（自动模式为每 14 天）
+sudo bash scripts/harden-nginx.sh              # nginx 安全加固（一次性，幂等）
 
 # 本地开发
 npm run develop          # Strapi 开发模式 → http://localhost:1337
@@ -67,6 +69,7 @@ npm run serve            # 静态预览 → http://localhost:3000
 | 预览/重建服务 | `scripts/webhook-listener.js`（systemd: b2b-webhook） |
 | 自动重建日志 | `auto-rebuild.log` / `webhook-listener.log` |
 | 数据库备份 | `backups/db/*.sql.gz`（保留 56 天） |
+| GitHub 异地备份 | `scripts/github-backup.sh`（每 14 天，日志 `github-backup.log`） |
 | 旧 slug 301 映射 | `data/legacy-equipment-slugs.json` |
 
 > 内容变更生效机制：后台保存/发布/删除设备 → 约 3 秒自动重建（cron 每 30 分钟哈希兜底）。详见 17-系统架构文档 §6。
