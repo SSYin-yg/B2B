@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sec_spec_columns",
+  "info": {
+    "displayName": "规格表 · 列",
+    "icon": "expand"
+  },
+  "options": {},
+  "attributes": {
+    "name_zh": {
+      "type": "string",
+      "required": true,
+      "displayName": "列名（中文）"
+    },
+    "name_en": {
+      "type": "string",
+      "displayName": "Column name (English)"
+    }
+  }
+}

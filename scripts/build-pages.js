@@ -1,0 +1,1278 @@
+'use strict';
+
+/**
+ * 静态页面生成脚本（中英文双版本）
+ * 数据源：Strapi API（Equipment 内容类型）
+ * 输出：
+ *   1. equipment/{slug}.html         —— 中文设备详情页（URL 保持不变）
+ *   2. en/equipment/{slug}.html      —— 英文设备详情页（第二阶段新增）
+ *   3. sitemap.xml                   —— 含中文 + 英文设备 URL
+ *   4. assets/equipment-data.js     —— 由 Strapi 数据回写
+ *   5. assets/model-tables.js       —— 由 Strapi 数据回写
+ *   6. assets/website-images.css    —— 由 Strapi「网站图片」生成（CSS 背景类图片）
+ *   7. 静态页面（index/about/solutions/support/faq/equipment-catalog）中的 data-wb-img 标记替换
+ *
+ * 运行：node scripts/build-pages.js [--api-base http://localhost:1337] [--prune]
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const TEMPLATE_PATH = path.join(ROOT, 'equipment', '_template.html');
+const EQUIPMENT_DIR = path.join(ROOT, 'equipment');
+const EN_EQUIPMENT_DIR = path.join(ROOT, 'en', 'equipment');
+/* 历史设备 slug 映射：HTTP 301 / canonical / 一致性检查统一事实来源
+ * 缺失或格式错误时必须 fail-safe，禁止静默吞错。 */
+const LEGACY_SLUGS_PATH = path.join(ROOT, 'data', 'legacy-equipment-slugs.json');
+
+/**
+ * 加载历史设备 slug 映射。
+ * @returns {{ mapping: Object, oldSlugs: Set<string>, version: number|null }}
+ *   - mapping : { [oldSlug]: { new_slug, old_path, new_path, name_zh, status } }
+ *   - oldSlugs: 全部 old slug（status === 'active'）
+ *   - version : _meta.version
+ * @throws 当文件缺失 / JSON 损坏 / 结构不合法时直接抛出，由调用方决定是否降级
+ */
+function loadLegacyEquipmentSlugs() {
+  if (!fs.existsSync(LEGACY_SLUGS_PATH)) {
+    throw new Error('legacy mapping 文件不存在: ' + LEGACY_SLUGS_PATH);
+  }
+  var raw = fs.readFileSync(LEGACY_SLUGS_PATH, 'utf8');
+  var doc;
+  try { doc = JSON.parse(raw); }
+  catch (e) {
+    throw new Error('legacy mapping JSON 解析失败: ' + (e && e.message ? e.message : e));
+  }
+  if (!doc || typeof doc !== 'object' || !doc.redirects || typeof doc.redirects !== 'object') {
+    throw new Error('legacy mapping 结构异常：缺少 redirects 对象');
+  }
+  var redirects = doc.redirects;
+  var oldSlugs = new Set();
+  var validated = {};
+  Object.keys(redirects).forEach(function (oldSlug) {
+    var info = redirects[oldSlug];
+    if (!info || typeof info !== 'object') return;
+    if (info.status && info.status !== 'active') return; /* 跳过非 active 项 */
+    if (typeof info.new_slug !== 'string' || !info.new_slug) return;
+    oldSlugs.add(oldSlug);
+    validated[oldSlug] = info;
+  });
+  return {
+    mapping: validated,
+    oldSlugs: oldSlugs,
+    version: (doc._meta && typeof doc._meta.version === 'number') ? doc._meta.version : null,
+  };
+}
+
+/* 网站图片槽位定义（与 Strapi 后台 Website Image 条目一一对应） */
+const { SLOTS: WEBSITE_IMAGE_SLOTS } = require('./website-image-slots.js');
+
+/* ---------- 环境配置 ---------- */
+function loadEnvFile() {
+  /* 兼容两种部署布局：根目录 .env 与 backend/.env */
+  const candidates = [path.join(ROOT, '.env'), path.join(ROOT, 'backend', '.env')];
+  const envPath = candidates.find((p) => fs.existsSync(p));
+  if (!envPath) {
+    console.warn('[build-pages] 警告：未找到 .env 文件，SITE_URL 将使用占位符 {{ORIGIN}}');
+    return;
+  }
+  for (const line of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
+    if (m && !(m[1] in process.env)) process.env[m[1]] = m[2].trim();
+  }
+  console.log('[build-pages] 已加载环境变量: ' + envPath);
+}
+loadEnvFile();
+
+const STRAPI_URL = (process.env.STRAPI_URL || 'http://localhost:1337').replace(/\/+$/, '');
+const SITE_URL = process.env.SITE_URL || '{{ORIGIN}}';
+
+/* ---------- CLI 参数 ---------- */
+const args = process.argv.slice(2);
+function getArg(name) {
+  const i = args.indexOf(name);
+  return i >= 0 && args[i + 1] ? args[i + 1] : null;
+}
+const API_BASE = getArg('--api-base') || '';
+/* 默认清理 unknownStale 过期设备页（后台删除设备后前端不再残留）；
+   --no-prune 可临时关闭。known legacy 映射页始终保留（由 Nginx 301）。 */
+const PRUNE = !args.includes('--no-prune');
+
+/* ---------- 工具 ---------- */
+const typeZh = { mobile: '移动破碎站', crushing: '破碎制砂', screening: '筛分输送', washing: '洗砂设备', parts: '易损件' };
+const typeEn = { mobile: 'Mobile crushing', crushing: 'Crushing & sand', screening: 'Screening & feed', washing: 'Sand washing', parts: 'Wear parts' };
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function absUrl(relPath) {
+  if (!relPath) return '';
+  if (/^https?:\/\//.test(relPath)) return relPath;
+  return SITE_URL.replace(/\/+$/, '') + '/' + String(relPath).replace(/^\/+/, '');
+}
+
+function asArray(v) {
+  return Array.isArray(v) ? v : [];
+}
+
+/** 媒体库字段（media 对象）→ 站点相对路径。
+ *  Strapi 本地上传目录已 symlink 到 assets/images/equipment，
+ *  因此 /uploads/<文件名> 与 assets/images/equipment/<文件名> 一一对应。 */
+function mediaToPath(v) {
+  if (!v) return '';
+  if (typeof v === 'string') return v;
+  var url = v.url || (v.data && v.data.attributes && v.data.attributes.url) || '';
+  if (!url) return '';
+  var name = String(url).split('/').pop();
+  return 'assets/images/equipment/' + name;
+}
+
+function mediaToPaths(v) {
+  if (Array.isArray(v)) return v.map(mediaToPath).filter(Boolean);
+  var one = mediaToPath(v);
+  return one ? [one] : [];
+}
+
+/** 图片路径前缀：中文页 ..  英文页 ../.. */
+function prefixImg(src, rel) {
+  if (!src) return src;
+  if (/^https?:\/\//.test(src)) return src;
+  return rel + '/' + src;
+}
+
+/** slug 规范化：统一转为小写字母/数字/连字符，保证 URL 安全。
+ *  后台录入 "Crawler Impact Station" 这类值也会被规整为 crawler-impact-station，
+ *  避免文件名带空格、页面数据与链接不一致导致详情页"未找到设备"。 */
+function normalizeSlug(raw) {
+  return String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+async function fetchEquipment() {
+  /* Dynamic Zone（content）需按组件类型显式 populate：
+     sec.image/sec.gallery 的媒体、sec.list 的条目、sec.spec-table 的列/行/单元格/备注 */
+  const params = new URLSearchParams({
+    'pagination[pageSize]': '200',
+    'sort': 'slug:asc',
+    'populate[images]': 'true',
+    'populate[og_image]': 'true',
+    /* 特点 / 主要参数 / 型号参数表（可视化组件 / 自定义字段，显式 populate） */
+    'populate[features_zh]': 'true',
+    'populate[features_en]': 'true',
+    'populate[specs]': 'true',
+    /* model_tables_grid 为 JSON 自定义字段（可视化网格编辑器），随默认字段返回，无需 populate */
+    'populate[content][on][sec.heading]': 'true',
+    'populate[content][on][sec.rich-text]': 'true',
+    'populate[content][on][sec.image][populate][image]': 'true',
+    'populate[content][on][sec.gallery][populate][images]': 'true',
+    'populate[content][on][sec.list][populate][items]': 'true',
+    'populate[content][on][sec.table]': 'true',
+    'populate[content][on][sec.spec-table][populate][columns]': 'true',
+    'populate[content][on][sec.spec-table][populate][notes]': 'true',
+    'populate[content][on][sec.spec-table][populate][rows][populate][cells]': 'true',
+  });
+  const url = `${STRAPI_URL}/api/equipments?${params.toString()}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`获取设备数据失败: HTTP ${res.status}（请确认 Strapi 已启动：${STRAPI_URL}）`);
+  }
+  const json = await res.json();
+  const list = (json && json.data) || [];
+  return list.map((e, i) => {
+    /* Strapi 5 REST 响应为扁平结构（字段在顶层，兼容 v4 的 attributes 包裹） */
+    const entry = e && e.attributes ? { ...e.attributes, documentId: e.documentId } : { ...e };
+    /* 媒体库字段规范化：media 对象数组 → 相对路径字符串数组（供 imgTag/JSON-LD 使用） */
+    entry.images = mediaToPaths(entry.images);
+    entry.og_image = mediaToPath(entry.og_image);
+    entry.slug = normalizeSlug(entry.slug) || entry.documentId || 'equipment-' + i;
+    entry.content = normalizeContent(entry.content);
+    /* 特点 / 主要参数 / 型号表组件数据 → 旧渲染形状（前台 HTML 与 assets/*.js 输出保持不变） */
+    entry.features_zh = normalizeFeatures(entry.features_zh);
+    entry.features_en = normalizeFeatures(entry.features_en);
+    entry.specs = normalizeSpecs(entry.specs);
+    /* 型号参数表：优先读可视化网格字段（JSON），兼容旧组件字段（过渡期） */
+    entry.model_tables = normalizeModelTables(entry.model_tables_grid != null ? entry.model_tables_grid : entry.model_tables);
+    return entry;
+  });
+}
+
+/** 正文 Dynamic Zone 规范化：把组件内的 media 对象转为站点相对路径 */
+function normalizeContent(content) {
+  if (!Array.isArray(content)) return [];
+  return content.map(function (b) {
+    var out = { ...b };
+    if (b.__component === 'sec.image') {
+      out.image = mediaToPath(b.image);
+    } else if (b.__component === 'sec.gallery') {
+      out.images = mediaToPaths(b.images);
+    }
+    return out;
+  });
+}
+
+/** 产品特点：组件 [{text}] → 字符串数组（兼容旧 JSON 字符串数组） */
+function normalizeFeatures(value) {
+  return asArray(value)
+    .map(function (f) {
+      if (typeof f === 'string') return f.trim();
+      if (f && typeof f === 'object') return String(f.text || f.text_zh || f.text_en || '').trim();
+      return '';
+    })
+    .filter(Boolean);
+}
+
+/** 主要参数：equip.spec 组件 {k_zh,k_en,v} → 与旧 JSON 相同形状（过滤空行） */
+function normalizeSpecs(value) {
+  return asArray(value)
+    .map(function (s) {
+      if (!s || typeof s !== 'object') return null;
+      var k_zh = String(s.k_zh || '').trim();
+      var k_en = String(s.k_en || '').trim();
+      var v = String(s.v || '').trim();
+      if (!k_zh && !k_en && !v) return null;
+      return { k_zh: k_zh, k_en: k_en, v: v };
+    })
+    .filter(Boolean);
+}
+
+/** 型号参数表：equip.model-table 组件 / 网格编辑器 JSON → 旧渲染形状 {title_zh,title_en,columns:[{zh,en}],rows:[[str]],notes:[{zh,en}]}
+ *  行单元格取中文值（英文页沿用旧逻辑共用字符串） */
+function normalizeModelTables(value) {
+  return asArray(value)
+    .map(function (t) {
+      if (!t || typeof t !== 'object') return null;
+      var columns = asArray(t.columns)
+        .map(function (c) {
+          if (!c || typeof c !== 'object') return null;
+          var zh = String(c.zh || c.name_zh || '').trim();
+          var en = String(c.en || c.name_en || '').trim();
+          return zh || en ? { zh: zh, en: en } : null;
+        })
+        .filter(Boolean);
+      var rows = asArray(t.rows)
+        .map(function (r) {
+          var cells = r && typeof r === 'object' ? asArray(r.cells) : asArray(r);
+          return cells
+            .map(function (cell) {
+              if (typeof cell === 'string') return cell.trim();
+              var zh = String((cell && cell.value_zh) || '').trim();
+              var en = String((cell && cell.value_en) || '').trim();
+              return zh || en;
+            })
+            .filter(Boolean);
+        })
+        .filter(function (r) {
+          return r.length;
+        });
+      var notes = asArray(t.notes)
+        .map(function (n) {
+          if (typeof n === 'string') return n.trim() ? { zh: n.trim(), en: '' } : null;
+          var zh = String((n && (n.text_zh || n.text)) || '').trim();
+          var en = String((n && n.text_en) || '').trim();
+          return zh || en ? { zh: zh, en: en } : null;
+        })
+        .filter(Boolean);
+      var title_zh = String(t.title_zh || '').trim();
+      var title_en = String(t.title_en || '').trim();
+      if (!title_zh && !title_en && !columns.length && !rows.length && !notes.length) return null;
+      return { title_zh: title_zh, title_en: title_en, columns: columns, rows: rows, notes: notes };
+    })
+    .filter(Boolean);
+}
+
+/* ---------- Strapi Blocks 富文本 → HTML（段落/标题/列表/引用/代码/链接） ---------- */
+function renderInline(nodes) {
+  if (!Array.isArray(nodes)) return '';
+  return nodes.map(function (n) {
+    if (n.type === 'link') {
+      var url = n.url || '#';
+      var external = /^https?:\/\//.test(url);
+      return '<a href="' + escapeHtml(url) + '"' + (external ? ' target="_blank" rel="noopener"' : '') + '>' + renderInline(n.children || []) + '</a>';
+    }
+    var t = escapeHtml(n.text || '');
+    if (n.code) t = '<code>' + t + '</code>';
+    if (n.bold) t = '<strong>' + t + '</strong>';
+    if (n.italic) t = '<em>' + t + '</em>';
+    if (n.strikethrough) t = '<del>' + t + '</del>';
+    if (n.underline) t = '<u>' + t + '</u>';
+    return t;
+  }).join('');
+}
+
+function renderBlocks(blocks) {
+  if (!Array.isArray(blocks)) return '';
+  return blocks.map(function (b) {
+    switch (b.type) {
+      case 'paragraph':
+        return '<p>' + renderInline(b.children) + '</p>';
+      case 'heading': {
+        var lvl = Math.min(6, Math.max(1, Number(b.level) || 2));
+        return '<h' + lvl + ' class="art-subh art-subh-' + lvl + '">' + renderInline(b.children) + '</h' + lvl + '>';
+      }
+      case 'list': {
+        var tag = b.format === 'ordered' ? 'ol' : 'ul';
+        var items = (b.children || []).map(function (it) {
+          var kids = it.children || [];
+          var paras = kids.filter(function (c) { return c.type === 'paragraph'; })
+            .map(function (p) { return renderInline(p.children); }).join('<br>');
+          var nested = kids.filter(function (c) { return c.type === 'list'; });
+          return '<li>' + paras + (nested.length ? renderBlocks(nested) : '') + '</li>';
+        }).join('');
+        return '<' + tag + '>' + items + '</' + tag + '>';
+      }
+      case 'quote':
+        return '<blockquote>' + (b.children || []).map(function (p) {
+          return '<p>' + renderInline(p.children) + '</p>';
+        }).join('') + '</blockquote>';
+      case 'code':
+        return '<pre><code>' + escapeHtml((b.children || []).map(function (c) { return c.text || ''; }).join('\n')) + '</code></pre>';
+      default:
+        return '';
+    }
+  }).join('');
+}
+
+/* 中英字段取值：中文页取 zh 兜底 en，英文页取 en 兜底 zh */
+function blockText(isEn, zh, en) {
+  return isEn ? (en || zh || '') : (zh || en || '');
+}
+
+/* ---------- 长正文（Dynamic Zone）→ 正文 HTML + TOC ---------- */
+function buildArticle(entry, lang, rel) {
+  var isEn = lang === 'en';
+  var blocks = Array.isArray(entry.content) ? entry.content : [];
+  var toc = [];
+  var seenIds = {};
+  var idCounter = 0;
+
+  function makeId(text) {
+    var slug = normalizeSlug(text);
+    if (slug) {
+      /* 英文/数字标题：可读 id，如 sec-product-overview */
+      var base = 'sec-' + slug;
+      var id = base;
+      var n = 2;
+      while (seenIds[id]) { id = base + '-' + n; n++; }
+      seenIds[id] = true;
+      return id;
+    }
+    /* 中文等无 ASCII 标题：稳定序号 id，如 sec-1 */
+    var id2;
+    do { id2 = 'sec-' + (++idCounter); } while (seenIds[id2]);
+    seenIds[id2] = true;
+    return id2;
+  }
+
+  var body = blocks.map(function (b) {
+    switch (b.__component) {
+      case 'sec.heading': {
+        var text = blockText(isEn, b.text_zh, b.text_en);
+        if (!text) return '';
+        var isH3 = b.level === 'h3';
+        var id = makeId(text);
+        toc.push({ id: id, text: text, level: isH3 ? 3 : 2 });
+        return '<' + (isH3 ? 'h3' : 'h2') + ' id="' + id + '" class="art-h art-' + (isH3 ? 'h3' : 'h2') + '">' + escapeHtml(text) + '</' + (isH3 ? 'h3' : 'h2') + '>';
+      }
+      case 'sec.rich-text': {
+        var html = renderBlocks(isEn ? b.body_en : b.body_zh);
+        return html ? '<div class="art-richtext">' + html + '</div>' : '';
+      }
+      case 'sec.image': {
+        if (!b.image) return '';
+        var alt = blockText(isEn, b.alt_zh, b.alt_en) || blockText(isEn, entry.name_cn, entry.name_en) || '';
+        var cap = blockText(isEn, b.caption_zh, b.caption_en);
+        return '<figure class="art-figure">' +
+          '<img src="' + escapeHtml(prefixImg(b.image, rel)) + '" alt="' + escapeHtml(alt) + '" loading="lazy">' +
+          (cap ? '<figcaption>' + escapeHtml(cap) + '</figcaption>' : '') +
+          '</figure>';
+      }
+      case 'sec.gallery': {
+        var imgs = asArray(b.images);
+        if (!imgs.length) return '';
+        var gcap = blockText(isEn, b.caption_zh, b.caption_en);
+        var galt = blockText(isEn, entry.name_cn, entry.name_en) || '';
+        return '<figure class="art-gallery">' +
+          imgs.map(function (s) {
+            return '<div class="art-gallery-item"><img src="' + escapeHtml(prefixImg(s, rel)) + '" alt="' + escapeHtml(galt) + '" loading="lazy"></div>';
+          }).join('') +
+          (gcap ? '<figcaption>' + escapeHtml(gcap) + '</figcaption>' : '') +
+          '</figure>';
+      }
+      case 'sec.list': {
+        var items = asArray(b.items);
+        if (!items.length) return '';
+        var tag = b.variant === 'ordered' ? 'ol' : 'ul';
+        var cls = 'art-list' + (b.variant === 'check' ? ' art-list-check' : (b.variant === 'ordered' ? ' art-list-ordered' : ' art-list-bullet'));
+        return '<' + tag + ' class="' + cls + '">' +
+          items.map(function (it) { return '<li>' + escapeHtml(blockText(isEn, it.text_zh, it.text_en)) + '</li>'; }).join('') +
+          '</' + tag + '>';
+      }
+      case 'sec.spec-table': {
+        var cols = asArray(b.columns);
+        var rows = asArray(b.rows);
+        var notes = asArray(b.notes);
+        if (!cols.length || !rows.length) return '';
+        var title = blockText(isEn, b.title_zh, b.title_en);
+        var thead = '<tr>' + cols.map(function (c) {
+          return '<th>' + escapeHtml(blockText(isEn, c.name_zh, c.name_en)) + '</th>';
+        }).join('') + '</tr>';
+        var tbody = rows.map(function (r) {
+          var cells = asArray(r.cells);
+          var tds = '';
+          for (var ci = 0; ci < cols.length; ci++) {
+            var cell = cells[ci] || {};
+            tds += '<td>' + escapeHtml(blockText(isEn, cell.value_zh, cell.value_en)) + '</td>';
+          }
+          return '<tr>' + tds + '</tr>';
+        }).join('');
+        var noteHtml = notes.length
+          ? '<ul class="table-note">' + notes.map(function (n) {
+              var nt = blockText(isEn, n.text_zh, n.text_en);
+              return nt ? '<li>' + escapeHtml(nt) + '</li>' : '';
+            }).join('') + '</ul>'
+          : '';
+        return '<div class="spec-table-block">' +
+          (title ? '<h3 class="spec-table-title">' + escapeHtml(title) + '</h3>' : '') +
+          '<div class="model-table-scroll"><table class="model-table"><thead>' + thead + '</thead><tbody>' + tbody + '</tbody></table></div>' +
+          noteHtml +
+          '</div>';
+      }
+      case 'sec.table': {
+        var tcap = blockText(isEn, b.caption_zh, b.caption_en);
+        var tdata = b.table && typeof b.table === 'object' ? b.table : null;
+        var tcols = tdata && Array.isArray(tdata.columns) ? tdata.columns : [];
+        var trows = tdata && Array.isArray(tdata.rows) ? tdata.rows : [];
+        if (!tcols.length || !trows.length) return '';
+        var thead2 = '<tr>' + tcols.map(function (c) {
+          return '<th>' + escapeHtml(blockText(isEn, c.name_zh, c.name_en)) + '</th>';
+        }).join('') + '</tr>';
+        var tbody2 = trows.map(function (r) {
+          var cells = Array.isArray(r && r.cells) ? r.cells : [];
+          var tds = '';
+          for (var ci2 = 0; ci2 < tcols.length; ci2++) {
+            var cc = cells[ci2] || {};
+            tds += '<td>' + escapeHtml(blockText(isEn, cc.value_zh, cc.value_en)) + '</td>';
+          }
+          return '<tr>' + tds + '</tr>';
+        }).join('');
+        return '<div class="spec-table-block">' +
+          (tcap ? '<h3 class="spec-table-title">' + escapeHtml(tcap) + '</h3>' : '') +
+          '<div class="model-table-scroll"><table class="model-table"><thead>' + thead2 + '</thead><tbody>' + tbody2 + '</tbody></table></div>' +
+          '</div>';
+      }
+      default:
+        return '';
+    }
+  }).join('');
+
+  if (!body.trim()) return { html: '', toc: [] };
+
+  var tocLabel = isEn ? 'Contents' : '目录';
+  var tocHtml = toc.length
+    ? '<aside class="toc"><div class="toc-inner">' +
+      '<button type="button" class="toc-toggle" aria-expanded="false">' + escapeHtml(tocLabel) + '<span class="toc-arrow">▾</span></button>' +
+      '<div class="toc-title">' + escapeHtml(tocLabel) + '</div>' +
+      '<ul class="toc-list">' +
+        toc.map(function (t) {
+          return '<li class="toc-l' + t.level + '"><a href="#' + t.id + '" data-toc="' + t.id + '">' + escapeHtml(t.text) + '</a></li>';
+        }).join('') +
+      '</ul></div></aside>'
+    : '';
+
+  return {
+    html: '<div class="article-layout"><article class="article">' + body + '</article>' + tocHtml + '</div>',
+    toc: toc,
+  };
+}
+
+/* ---------- 静态产品区块 ---------- */
+function imgTag(src, alt, rel) {
+  var s = rel ? prefixImg(src, rel) : src;
+  return '<img src="' + escapeHtml(s) + '" alt="' + escapeHtml(alt || '') + '" loading="lazy" onerror="this.style.display=\'none\';var p=this.nextElementSibling;if(p)p.style.display=\'grid\';" />';
+}
+
+function buildStaticHtml(entry, related, lang, rel) {
+  var isEn = lang === 'en';
+  var name = isEn ? (entry.name_en || entry.slug) : (entry.name_cn || entry.slug);
+  var desc = isEn ? (entry.desc_en || '') : (entry.desc_zh || '');
+  var features = asArray(isEn ? entry.features_en : entry.features_zh);
+  var specs = asArray(entry.specs);
+  var images = asArray(entry.images);
+  var modelTables = asArray(entry.model_tables);
+  var typeMap = isEn ? typeEn : typeZh;
+
+  var mainImg = images[0] || '';
+  var thumbs = images
+    .map(function (src, i) {
+      return '<button type="button" class="' + (i === 0 ? 'active' : '') + '" data-src="' + escapeHtml(src) + '">' +
+        imgTag(src, name, rel) + '<span class="thumb-ph" style="display:none"></span></button>';
+    })
+    .join('');
+
+  var featureHtml = features.map(function (f) { return '<li>' + escapeHtml(f) + '</li>'; }).join('');
+  var specsHtml = specs
+    .map(function (s) { return '<tr><th>' + escapeHtml(isEn ? (s.k_en || '') : (s.k_zh || '')) + '</th><td>' + escapeHtml(s.v || '') + '</td></tr>'; })
+    .join('');
+
+  var modelTablesHtml = modelTables.length
+    ? modelTables
+        .map(function (t) {
+          var head = (t.columns || []).map(function (c) { return '<th>' + escapeHtml(isEn ? (c.en || c.zh) : c.zh) + '</th>'; }).join('');
+          var body = (t.rows || [])
+            .map(function (row) { return '<tr>' + row.map(function (cell) { return '<td>' + escapeHtml(cell) + '</td>'; }).join('') + '</tr>'; })
+            .join('');
+          var noteHtml = (t.notes || []).length
+            ? '<ul class="table-note">' +
+              (t.notes || [])
+                .map(function (n) { return '<li>' + escapeHtml(isEn ? (n.en || n.zh) : n.zh) + '</li>'; })
+                .join('') +
+              '</ul>'
+            : '';
+          return (
+            '<div class="model-table-wrap">' +
+            '<div class="block-title">' + escapeHtml(isEn ? (t.title_en || t.title_zh || '') : (t.title_zh || '')) + '</div>' +
+            '<div class="model-table-scroll"><table class="model-table"><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div>' +
+            noteHtml +
+            '</div>'
+          );
+        })
+        .join('')
+    : '';
+
+  var relatedTitle = isEn ? 'Related equipment' : '相关设备';
+  var relatedHtml = related.length
+    ? '<div class="related"><h2>' + escapeHtml(relatedTitle) + '</h2><div class="related-grid">' +
+      related
+        .map(function (p) {
+          var pName = isEn ? (p.en || p.cn) : p.cn;
+          var img = p.img ? imgTag(p.img, pName, rel) + '<span class="ph" style="display:none"></span>' : '<span class="ph"></span>';
+          return (
+            '<a class="related-card" href="' + encodeURIComponent(p.id) + '.html">' +
+            '<div class="rc-art">' + img + '</div>' +
+            '<div class="rc-body"><div class="rc-type">' + escapeHtml(typeMap[p.type] || '') + '</div><h3>' + escapeHtml(pName) + '</h3></div></a>'
+          );
+        })
+        .join('') +
+      '</div></div>'
+    : '';
+
+  var quoteText = isEn ? 'Get a quote' : '获取报价';
+  var catLink = isEn ? 'More in this category' : '查看同类设备';
+  var featTitle = isEn ? 'Highlights' : '产品特点';
+  var specsTitle = isEn ? 'Key parameters' : '主要参数';
+  var noteText = isEn
+    ? 'Specifications are typical ranges. Final configuration depends on ore, capacity and site conditions. Request a quote for a tailored proposal.'
+    : '以上参数为常见配置区间，最终方案需结合矿石、产能与场地条件确定。提交询价后顾问将为您出具专属配置。';
+
+  /* 长正文型：content 有块时，Hero 右侧只保留分类/名称/简述/报价按钮，
+     特点与参数移入正文；无正文时回退旧版卡片布局 */
+  var article = buildArticle(entry, lang, rel);
+  var hasArticle = !!article.html;
+  var heroExtra = hasArticle
+    ? ''
+    : (featureHtml ? '<div class="block-title">' + escapeHtml(featTitle) + '</div><ul class="feature-list">' + featureHtml + '</ul>' : '') +
+      (specsHtml ? '<div class="block-title">' + escapeHtml(specsTitle) + '</div><table class="specs"><tbody>' + specsHtml + '</tbody></table>' : '') +
+      '<p class="product-note">' + escapeHtml(noteText) + '</p>';
+
+  return (
+    '<div class="product-layout' + (hasArticle ? ' product-layout-article' : '') + '">' +
+      '<div class="gallery">' +
+        '<div class="gallery-main" id="galleryMain">' +
+          (mainImg ? imgTag(mainImg, name, rel) + '<div class="placeholder" style="display:none">' + escapeHtml(entry.slug.toUpperCase().slice(0, 6)) + '</div>' : '<div class="placeholder">' + escapeHtml(entry.slug.toUpperCase().slice(0, 6)) + '</div>') +
+        '</div>' +
+        (thumbs ? '<div class="gallery-thumbs" id="galleryThumbs">' + thumbs + '</div>' : '') +
+      '</div>' +
+      '<div class="product-info">' +
+        '<div class="product-type">' + escapeHtml(typeMap[entry.category] || entry.category || '') + '</div>' +
+        '<h1 class="product-title">' + escapeHtml(name) + '</h1>' +
+        '<p class="product-desc">' + escapeHtml(desc) + '</p>' +
+        '<div class="product-actions">' +
+          '<button type="button" class="primary open-modal" id="quoteThis">' + escapeHtml(quoteText) + '</button>' +
+          '<a class="ghost" href="' + rel + '/equipment-catalog.html?filter=' + encodeURIComponent(entry.category || '') + '">' + escapeHtml(catLink) + '</a>' +
+        '</div>' +
+        heroExtra +
+      '</div>' +
+    '</div>' +
+    (hasArticle
+      ? article.html
+      : (modelTablesHtml ? '<div class="model-section">' + modelTablesHtml + '</div>' : '')) +
+    relatedHtml
+  );
+}
+
+function buildProductJsonLd(entry, lang) {
+  var isEn = lang === 'en';
+  var name = isEn ? (entry.name_en || entry.slug) : (entry.name_cn || entry.slug);
+  var desc = isEn ? (entry.desc_en || '') : (entry.desc_zh || '');
+  var urlPath = isEn ? 'en/equipment/' + entry.slug + '.html' : 'equipment/' + entry.slug + '.html';
+  var data = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: name,
+    image: asArray(entry.images).map(function (p) { return absUrl(p); }),
+    description: desc,
+    url: absUrl(urlPath),
+  };
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
+/* ---------- 单页生成 ---------- */
+function renderPage(entry, related, template, lang) {
+  var isEn = lang === 'en';
+  var rel = isEn ? '../..' : '..';
+  var name = isEn ? (entry.name_en || entry.slug) : (entry.name_cn || entry.slug);
+  var seoTitle = isEn
+    ? (entry.seo_title_en || name + ' | Minelink Equipment')
+    : (entry.seo_title_zh || name + ' | 矿联矿机');
+  var seoDescription = isEn
+    ? (entry.seo_description_en || entry.desc_en || '')
+    : (entry.seo_description_zh || entry.desc_zh || '');
+  var urlPath = isEn ? 'en/equipment/' + entry.slug + '.html' : 'equipment/' + entry.slug + '.html';
+  var canonical = absUrl(urlPath);
+  /* OG 图片回退链：设备自己的 OG 图 → 设备主图 → 后台「网站图片」默认分享图 → 历史路径 */
+  var ogImage = absUrl(
+    entry.og_image ||
+      asArray(entry.images)[0] ||
+      defaultOgImagePath() ||
+      'assets/og-cover.jpg'
+  );
+
+  /* hreflang 互链（中英文指向一致） */
+  var hreflangZh = absUrl('equipment/' + entry.slug + '.html');
+  var hreflangEn = absUrl('en/equipment/' + entry.slug + '.html');
+
+  var pageData = {
+    product: {
+      id: entry.slug,
+      en: entry.name_en || '',
+      cn: entry.name_cn || '',
+      type: entry.category,
+      images: asArray(entry.images),
+      desc_zh: entry.desc_zh || '',
+      desc_en: entry.desc_en || '',
+      features_zh: asArray(entry.features_zh),
+      features_en: asArray(entry.features_en),
+      specs: asArray(entry.specs),
+    },
+    modelTables: asArray(entry.model_tables),
+    related: related,
+  };
+
+  var apiBaseScript = API_BASE ? "window.MINELINK_API_BASE='" + API_BASE + "';" : '';
+  var langAttr = isEn ? 'en' : 'zh-CN';
+  var ogLocale = isEn ? 'en_US' : 'zh_CN';
+
+  return template
+    .replace(/\{\{LANG\}\}/g, langAttr)
+    .replace(/\{\{REL\}\}/g, rel)
+    .replace(/\{\{SEO_TITLE\}\}/g, escapeHtml(seoTitle))
+    .replace(/\{\{SEO_DESCRIPTION\}\}/g, escapeHtml(seoDescription))
+    .replace(/\{\{CANONICAL\}\}/g, escapeHtml(canonical))
+    .replace(/\{\{HREFLANG_ZH\}\}/g, escapeHtml(hreflangZh))
+    .replace(/\{\{HREFLANG_EN\}\}/g, escapeHtml(hreflangEn))
+    .replace(/\{\{OG_TITLE\}\}/g, escapeHtml(seoTitle))
+    .replace(/\{\{OG_DESCRIPTION\}\}/g, escapeHtml(seoDescription))
+    .replace(/\{\{OG_LOCALE\}\}/g, ogLocale)
+    .replace(/\{\{OG_IMAGE\}\}/g, escapeHtml(ogImage))
+    .replace(/\{\{PRODUCT_JSONLD\}\}/g, buildProductJsonLd(entry, lang))
+    .replace(/\{\{NAME\}\}/g, escapeHtml(name))
+    .replace(/\{\{STATIC_PRODUCT_HTML\}\}/g, buildStaticHtml(entry, related, lang, rel))
+    .replace(/\{\{PAGE_DATA_JSON\}\}/g, JSON.stringify(pageData).replace(/</g, '\\u003c'))
+    .replace(/\{\{API_BASE_SCRIPT\}\}/g, apiBaseScript)
+    .replace(/\{\{SLUG\}\}/g, encodeURIComponent(entry.slug));
+}
+
+/* ==================================================================
+ * 网站图片（Website Image）
+ *
+ * 数据源：Strapi → 内容 → 网站图片
+ * 输出：
+ *   1. 静态页面 HTML 中带 data-wb-img="<key>" 标记的元素（meta / link / img / 行内背景图）
+ *   2. assets/website-images.css（CSS 背景类图片：页头背景、Logo、方案配图等）
+ *
+ * 设计约束：
+ *   - 幂等：重复构建结果一致，标记属性不会被消耗掉
+ *   - 安全：取不到数据、图片缺失或已禁用时，页面保持原有外观，不出现裂图
+ *   - 分离：设备产品图片仍走 Equipment.images，与本系统互不干扰
+ * ================================================================== */
+
+/* 需要处理的静态页面（这些页面由人工维护，不做整页重新生成，只替换图片来源） */
+var STATIC_PAGE_TARGETS = [
+  'index.html',
+  'about.html',
+  'solutions.html',
+  'support.html',
+  'faq.html',
+  'equipment-catalog.html',
+];
+
+/* 当前构建使用的网站图片数据：{ key: { path, alt, caption, enabled } }
+   由 main() 在构建开始前填充，供 renderPage（OG 回退）等位置读取 */
+var CURRENT_WEBSITE_IMAGES = {};
+
+/** 取默认分享图（OG）的站点相对路径；未配置时返回 '' */
+function defaultOgImagePath() {
+  var og = CURRENT_WEBSITE_IMAGES['default_og_image'];
+  return og && og.enabled && og.path ? og.path : '';
+}
+
+/* ===== 站点全局设置（Site Settings） ===== */
+/* 全局变量：构建过程中由 fetchSiteSettings() 写入，供所有页面渲染使用。
+   取不到时使用安全默认值，避免页面出现 undefined/null。 */
+var CURRENT_SITE_SETTINGS = {
+  site_name_zh: '矿联矿机',
+  site_name_en: 'MINELINK EQUIPMENT',
+};
+
+/** 从 Strapi 拉取 site-setting（单例）；取不到/Strapi 异常时返回默认对象，绝不抛错。 */
+async function fetchSiteSettings() {
+  const url = STRAPI_URL + '/api/site-setting';
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.warn('警告: 获取 site-setting 失败 HTTP ' + res.status + '，使用默认站点名称');
+      return CURRENT_SITE_SETTINGS;
+    }
+    const json = await res.json();
+    const d = json && json.data;
+    if (!d) return CURRENT_SITE_SETTINGS;
+    const merged = Object.assign({}, CURRENT_SITE_SETTINGS, {
+      site_name_zh: typeof d.site_name_zh === 'string' && d.site_name_zh ? d.site_name_zh : CURRENT_SITE_SETTINGS.site_name_zh,
+      site_name_en: typeof d.site_name_en === 'string' && d.site_name_en ? d.site_name_en : CURRENT_SITE_SETTINGS.site_name_en,
+    });
+    return merged;
+  } catch (err) {
+    console.warn('警告: 无法连接 Strapi 获取 site-setting（' + (err && err.message ? err.message : err) + '），使用默认站点名称');
+    return CURRENT_SITE_SETTINGS;
+  }
+}
+
+/** 替换 HTML 中 WB 品牌占位符（幂等）。 */
+function replaceBrandMarkers(html, settings) {
+  var out = html;
+  var changed = 0;
+  var pairs = [
+    { marker: 'BRAND_ZH', value: settings.site_name_zh },
+    { marker: 'BRAND_EN', value: settings.site_name_en },
+  ];
+  for (var i = 0; i < pairs.length; i++) {
+    var pr = pairs[i];
+    var re = new RegExp('<!--WB:' + pr.marker + '-->[\\s\\S]*?<!--WB:' + pr.marker + '_END-->','g');
+if (!re.test(out)) continue;
+    var safe = String(pr.value || '');
+    out = out.replace(re, '<!--WB:' + pr.marker + '-->' + safe + '<!--WB:' + pr.marker + '_END-->');
+    changed++;
+  }
+  return { html: out, changed: changed };
+}
+
+
+/**
+ * 从 Strapi 读取网站图片。
+ * 取不到时不抛错（避免 Strapi 未升级 / 网络异常时整站构建失败），只返回空对象并告警。
+ */
+async function fetchWebsiteImages() {
+  const params = new URLSearchParams({
+    'pagination[pageSize]': '200',
+    'sort': 'sort_order:asc',
+    'populate[image]': 'true',
+  });
+  const url = `${STRAPI_URL}/api/website-images?${params.toString()}`;
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (err) {
+    console.warn('警告: 无法连接 Strapi 获取网站图片（' + err.message + '），本次构建沿用页面现有图片');
+    return {};
+  }
+  if (!res.ok) {
+    /* 404 / 403：多为内容类型尚未创建或 public 权限未授予 */
+    console.warn('警告: 获取网站图片失败 HTTP ' + res.status + '，本次构建沿用页面现有图片');
+    return {};
+  }
+  const json = await res.json();
+  const list = (json && json.data) || [];
+  const out = {};
+  for (var i = 0; i < list.length; i++) {
+    var e = list[i];
+    /* Strapi 5 为扁平结构；兼容 v4 的 attributes 包裹 */
+    var row = e && e.attributes ? { ...e.attributes, documentId: e.documentId } : { ...e };
+    if (!row || !row.key) continue;
+    out[row.key] = {
+      path: mediaToPath(row.image),
+      alt: row.alt || '',
+      caption: row.caption || '',
+      enabled: row.enabled !== false,
+    };
+  }
+  return out;
+}
+
+/** 取某个槽位可用的图片；不可用返回 null */
+function pickWebsiteImage(images, key) {
+  var it = images && images[key];
+  if (!it || !it.enabled || !it.path) return null;
+  return it;
+}
+
+/** 把路径转义后放进 CSS url() */
+function cssUrl(p) {
+  return "url('" + String(p).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "')";
+}
+
+/** 把网站图片路径统一转成站点绝对 /uploads/<name> 形式（nginx 别名到 assets/images/equipment/），
+ * 用于写在 assets/website-images.css 中，避免相对 assets/ 目录解析出错。 */
+function toUploadsUrl(p) {
+  p = String(p || '');
+  if (/^https?:\/\//.test(p)) return p;
+  if (p.indexOf('/uploads/') === 0) return p;
+  var name = p.split('/').pop();
+  return name ? '/uploads/' + name : p;
+}
+
+/**
+ * 替换 HTML 中带 data-wb-img="<key>" 标记的属性值（幂等）。
+ *
+ * 按元素类型决定替换目标：
+ *   <meta>  → content
+ *   <link>  → href
+ *   <img>   → src（并把 alt 补上后台配置的 ALT）
+ *   带行内 background-image 的元素 → style 中的 url(...)
+ */
+function replaceImgMarkers(html, images) {
+  var changed = 0;
+  var used = [];
+
+  /* 逐标签扫描：只处理本身带 data-wb-img 的标签 */
+  var out = html.replace(/<([a-zA-Z][a-zA-Z0-9-]*)\b([^>]*\bdata-wb-img\s*=\s*["']([^"']+)["'][^>]*)>/g, function (whole, tagName, attrs, key) {
+    var img = pickWebsiteImage(images, key);
+    if (!img) return whole; // 未配置 / 已禁用 → 保持页面原样
+
+    var tag = String(tagName).toLowerCase();
+    var next = attrs;
+
+    if (tag === 'meta') {
+      next = attrs.replace(/\bcontent\s*=\s*"[^"]*"/, 'content="' + escapeHtml(absUrl(img.path)) + '"');
+    } else if (tag === 'link') {
+      next = attrs.replace(/\bhref\s*=\s*"[^"]*"/, 'href="' + escapeHtml(img.path) + '"');
+    } else if (tag === 'img') {
+      next = attrs.replace(/\bsrc\s*=\s*"[^"]*"/, 'src="' + escapeHtml(img.path) + '"');
+      if (img.alt && /\balt\s*=/.test(next)) {
+        next = next.replace(/\balt\s*=\s*"[^"]*"/, 'alt="' + escapeHtml(img.alt) + '"');
+      } else if (img.alt) {
+        next = next + ' alt="' + escapeHtml(img.alt) + '"';
+      }
+    } else if (/\bstyle\s*=\s*"[^"]*background-image\s*:/.test(attrs)) {
+      /* 行内背景图：替换 style 中的 background-image 值（cssUrl 已包含 url(...) 外壳） */
+      next = attrs.replace(
+        /background-image\s*:\s*url\((['"]?)[^)'"]*\1\)/g,
+        'background-image:' + cssUrl(img.path)
+      );
+    } else {
+      /* 其他元素：交给 CSS（assets/website-images.css）处理，这里不动 */
+      return whole;
+    }
+
+    if (next === attrs) return whole; // 没有匹配到目标属性，保持原样避免误伤
+    changed++;
+    used.push(key);
+    return '<' + tagName + next + '>';
+  });
+
+  return { html: out, changed: changed, used: used };
+}
+
+/** 替换形如 <!--WB:FAVICON:START-->...<!--WB:FAVICON:END--> 的可选注入块（幂等） */
+function replaceOptionalBlock(html, marker, content) {
+  var re = new RegExp('<!--WB:' + marker + ':START-->[\\s\\S]*?<!--WB:' + marker + ':END-->');
+  if (!re.test(html)) return { html: html, changed: 0 };
+  return { html: html.replace(re, '<!--WB:' + marker + ':START-->' + content + '<!--WB:' + marker + ':END-->'), changed: 1 };
+}
+
+/**
+ * 生成 assets/website-images.css
+ * 仅对「已配置且已启用」的 css 模式槽位输出规则；未配置的槽位不输出任何规则，
+ * 页面继续沿用原有 CSS（渐变 / 外链图片），视觉效果完全不变。
+ */
+function writeWebsiteImageCss(images) {
+  var rules = [];
+  var used = [];
+
+  for (var i = 0; i < WEBSITE_IMAGE_SLOTS.length; i++) {
+    var slot = WEBSITE_IMAGE_SLOTS[i];
+    if (slot.mode !== 'css') continue;
+    var img = pickWebsiteImage(images, slot.key);
+    if (!img) continue;
+
+    /* website-images.css 位于 assets/ 目录内，CSS 相对 url 会相对 assets/ 解析，
+       因此必须转成站点绝对路径 /uploads/<name>（nginx 已把 /uploads/ 别名到
+       assets/images/equipment/），确保从根页面、子目录页面、CSS 文件本身都能正确取到图片。 */
+    var url = cssUrl(toUploadsUrl(img.path));
+    var value = slot.cssOverlay ? slot.cssOverlay + ',' + url : url;
+
+    if (slot.key === 'site_logo') {
+      /* Logo：替换六边形色块中的字母 M —— 未配置时这里不会输出，保持原样 */
+      rules.push(
+        '.brand-mark{background-image:' + url + '!important;background-size:cover!important;' +
+          'background-position:center!important;color:transparent!important;text-indent:-9999px}'
+      );
+    } else {
+      rules.push(
+        '[data-wb-img="' + slot.key + '"]{background-image:' + value + '!important;' +
+          'background-size:cover;background-position:center}'
+      );
+    }
+    used.push(slot.key);
+  }
+
+  var css =
+    '/**\n' +
+    ' * 网站图片样式（由 scripts/build-pages.js 从 Strapi「网站图片」自动生成，请勿手工编辑）\n' +
+    ' * 修改图片请前往 Strapi 后台 → 内容 → 网站图片，然后重新运行: npm run build-pages\n' +
+    ' */\n' +
+    (rules.length ? rules.join('\n') + '\n' : '/* 当前没有需要在 CSS 中使用的网站图片 */\n');
+
+  fs.writeFileSync(path.join(ROOT, 'assets', 'website-images.css'), css, 'utf8');
+  return used;
+}
+
+/** 处理静态页面：只替换图片来源，不改动其它任何内容 */
+function processStaticPages(images, settings) {
+  var report = [];
+  for (var i = 0; i < STATIC_PAGE_TARGETS.length; i++) {
+    var rel = STATIC_PAGE_TARGETS[i];
+    var file = path.join(ROOT, rel);
+    if (!fs.existsSync(file)) {
+      report.push({ file: rel, ok: false, note: '文件不存在，已跳过' });
+      continue;
+    }
+    var before = fs.readFileSync(file, 'utf8');
+    var after = before;
+    var notes = [];
+
+    /* 1. OG / Twitter / 行内背景等 data-wb-img 标记 */
+    var r = replaceImgMarkers(after, images);
+    after = r.html;
+    if (r.changed) notes.push('替换 ' + r.changed + ' 处标记: ' + Array.from(new Set(r.used)).join(', '));
+
+    /* 1.5 品牌文字占位符（来自 Strapi site-setting） */
+    var br = replaceBrandMarkers(after, settings);
+    after = br.html;
+    if (br.changed) notes.push('品牌名称已替换: site_name_zh / site_name_en');
+
+    /* 2. 首页 Organization JSON-LD 中的 logo 与默认分享图保持一致 */
+    var og = pickWebsiteImage(images, 'default_og_image');
+    if (og && /"@type"\s*:\s*"Organization"/.test(after)) {
+      var beforeLd = after;
+      after = after.replace(/"@type"\s*:\s*"Organization"/, '"@type":"Organization"');
+      after = after.replace(/("logo"\s*:\s*")[^"]*(")/, function (m, a, b) {
+        return a + absUrl(og.path).replace(/"/g, '') + b;
+      });
+      if (after !== beforeLd) notes.push('Organization JSON-LD logo 已同步');
+    }
+
+    /* 3. Favicon（可选注入块，未配置时清空，不残留空 href）。
+       为避免浏览器强缓存 Favicon，对每张 favicon 资源追加 ?v=<更新时间戳>。 */
+    var fav = pickWebsiteImage(images, 'site_favicon');
+    var favTags = '';
+    if (fav) {
+      var favSrc = fav.path;
+      var version = (fav.updatedAt ? String(fav.updatedAt) : String(Math.floor(Date.now()/1000))).replace(/[^0-9]/g, '');
+      if (version) favSrc += (favSrc.indexOf('?') >= 0 ? '&' : '?') + 'v=' + version.slice(0, 14);
+      favTags = '<link rel="icon" href="' + escapeHtml(favSrc) + '" />';
+    }
+    var fb = replaceOptionalBlock(after, 'FAVICON', favTags);
+    after = fb.html;
+    if (fb.changed) notes.push(fav ? 'Favicon 已注入' : 'Favicon 未配置（保持无 favicon）');
+
+    if (after !== before) {
+      fs.writeFileSync(file, after, 'utf8');
+      report.push({ file: rel, ok: true, note: notes.join('；') });
+    } else {
+      report.push({ file: rel, ok: true, note: '无变化' });
+    }
+  }
+  return report;
+}
+
+/* ---------- sitemap ---------- */
+var STATIC_SITEMAP_ENTRIES = [
+  { path: '', changefreq: 'weekly', priority: '1.0' },
+  { path: 'index.html', changefreq: 'weekly', priority: '1.0' },
+  { path: 'equipment-catalog.html', changefreq: 'weekly', priority: '0.9' },
+  { path: 'faq.html', changefreq: 'monthly', priority: '0.7' },
+  { path: 'solutions.html', changefreq: 'monthly', priority: '0.8' },
+  { path: 'support.html', changefreq: 'monthly', priority: '0.8' },
+  { path: 'about.html', changefreq: 'monthly', priority: '0.8' },
+];
+
+function writeSitemap(entries) {
+  var base = SITE_URL.replace(/\/+$/, '') + '/';
+  var urls = [];
+  for (var i = 0; i < STATIC_SITEMAP_ENTRIES.length; i++) {
+    var s = STATIC_SITEMAP_ENTRIES[i];
+    urls.push(
+      '  <url>\n    <loc>' + escapeHtml(base + s.path) + '</loc>\n    <changefreq>' + s.changefreq + '</changefreq>\n    <priority>' + s.priority + '</priority>\n  </url>'
+    );
+  }
+  for (var j = 0; j < entries.length; j++) {
+    var e = entries[j];
+    urls.push(
+      '  <url><loc>' + escapeHtml(base + 'equipment/' + e.slug + '.html') + '</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>'
+    );
+    urls.push(
+      '  <url><loc>' + escapeHtml(base + 'en/equipment/' + e.slug + '.html') + '</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>'
+    );
+  }
+  var xml =
+    '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+    urls.join('\n') +
+    '\n</urlset>\n';
+  fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), xml, 'utf8');
+}
+
+/* ---------- 数据文件回写 ---------- */
+function writeDataFiles(entries) {
+  var legacy = entries.map(function (e) {
+    return {
+      id: e.slug,
+      en: e.name_en || '',
+      cn: e.name_cn || '',
+      type: e.category,
+      images: asArray(e.images),
+      desc_zh: e.desc_zh || '',
+      desc_en: e.desc_en || '',
+      features_zh: asArray(e.features_zh),
+      features_en: asArray(e.features_en),
+      specs: asArray(e.specs),
+    };
+  });
+
+  var eqData =
+    '/**\n * 设备数据中心（由 scripts/build-pages.js 从 Strapi 自动生成，请勿手工编辑）\n * 编辑设备请前往 Strapi 后台 → Equipment，然后重新运行: npm run build-pages\n */\nwindow.MinelinkEquipment = ' +
+    JSON.stringify(legacy, null, 2) +
+    ';\n';
+  fs.writeFileSync(path.join(ROOT, 'assets', 'equipment-data.js'), eqData, 'utf8');
+
+  var tables = {};
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i];
+    var t = asArray(e.model_tables);
+    if (t.length) tables[e.slug] = t;
+  }
+  var modelTables =
+    '/**\n * 型号规格与性能参数表（由 scripts/build-pages.js 从 Strapi 自动生成，请勿手工编辑）\n * 编辑设备请前往 Strapi 后台 → Equipment，然后重新运行: npm run build-pages\n */\nwindow.MinelinkModelTables = ' +
+    JSON.stringify(tables, null, 2) +
+    ';\n';
+  fs.writeFileSync(path.join(ROOT, 'assets', 'model-tables.js'), modelTables, 'utf8');
+}
+
+/* ---------- 主流程 ---------- */
+async function main() {
+  console.log('== 静态页面生成（中英文双版本）==');
+  console.log('Strapi: ' + STRAPI_URL + ' | SITE_URL: ' + SITE_URL);
+
+  var template = fs.readFileSync(TEMPLATE_PATH, 'utf8');
+  var entries = await fetchEquipment();
+  if (!entries.length) throw new Error('Strapi 中没有设备数据，请先运行 backend 的 npm run migrate');
+  console.log('获取设备: ' + entries.length + ' 台');
+
+  /* 网站图片（Strapi → 内容 → 网站图片）：先于设备页渲染读取，供 OG 图回退使用 */
+  var websiteImages = await fetchWebsiteImages();
+  CURRENT_WEBSITE_IMAGES = websiteImages;
+  CURRENT_SITE_SETTINGS = await fetchSiteSettings();
+  console.log('站点设置: zh="' + CURRENT_SITE_SETTINGS.site_name_zh + '" en="' + CURRENT_SITE_SETTINGS.site_name_en + '"');
+  var wiTotal = Object.keys(websiteImages).length;
+  var wiActive = Object.keys(websiteImages).filter(function (k) {
+    return websiteImages[k].enabled && websiteImages[k].path;
+  }).length;
+  console.log('获取网站图片: ' + wiTotal + ' 个槽位（其中 ' + wiActive + ' 个已配置图片并启用）');
+
+  /* 确保英文目录存在 */
+  fs.mkdirSync(EN_EQUIPMENT_DIR, { recursive: true });
+
+  var okZh = 0, okEn = 0;
+  var failures = [];
+
+  /* slug 冲突检测：规范化后若多台设备落在同一 slug，只保留第一台并明确报错 */
+  var seen = {};
+  var unique = [];
+  entries.forEach(function (it) {
+    if (seen[it.slug]) {
+      failures.push(it.slug + ': 与其他设备的 slug 重复（' + (it.name_cn || it.name_en || '') + '），已跳过');
+      return;
+    }
+    seen[it.slug] = true;
+    unique.push(it);
+  });
+  if (unique.length !== entries.length) {
+    entries = unique;
+    console.warn('检测到 slug 冲突，实际生成 ' + entries.length + ' 台');
+  }
+
+  for (var i = 0; i < entries.length; i++) {
+    var entry = entries[i];
+    try {
+      var related = entries
+        .filter(function (p) { return p.category === entry.category && p.slug !== entry.slug; })
+        .slice(0, 3)
+        .map(function (p) { return { id: p.slug, en: p.name_en || '', cn: p.name_cn || '', type: p.category, img: asArray(p.images)[0] || '' }; });
+
+      /* 中文页 */
+      var htmlZh = renderPage(entry, related, template, 'zh');
+      fs.writeFileSync(path.join(EQUIPMENT_DIR, entry.slug + '.html'), htmlZh, 'utf8');
+      okZh++;
+
+      /* 英文页 */
+      var htmlEn = renderPage(entry, related, template, 'en');
+      fs.writeFileSync(path.join(EN_EQUIPMENT_DIR, entry.slug + '.html'), htmlEn, 'utf8');
+      okEn++;
+    } catch (err) {
+      failures.push(entry.slug + ': ' + (err && err.message ? err.message : err));
+    }
+  }
+
+  writeSitemap(entries);
+  writeDataFiles(entries);
+
+  /* 网站图片：生成 CSS + 替换静态页面中的图片来源 */
+  console.log('-- 网站图片 --');
+  var cssUsed = [];
+  try {
+    cssUsed = writeWebsiteImageCss(websiteImages);
+    console.log('assets/website-images.css 已生成' + (cssUsed.length ? '（生效槽位: ' + cssUsed.join(', ') + '）' : '（无 CSS 类图片，页面保持原样式）'));
+  } catch (err) {
+    failures.push('website-images.css: ' + (err && err.message ? err.message : err));
+  }
+  var pageReport = [];
+  try {
+    pageReport = processStaticPages(websiteImages, CURRENT_SITE_SETTINGS);
+  } catch (err) {
+    /* 静态页中若有一个文件 IO/正则异常，确保不影响设备页等其他产物的生成 */
+    failures.push('静态页处理异常（已中断该批次，设备页/CSS/数据文件仍正常生成）: ' + (err && err.message ? err.message : err));
+  }
+  pageReport.forEach(function (p) {
+    console.log('  ' + (p.ok ? '·' : '!') + ' ' + p.file + ' — ' + p.note);
+  });
+
+  console.log('中文页: ' + okZh + ' | 英文页: ' + okEn + ' | 失败: ' + failures.length);
+  failures.forEach(function (f) { console.log('  失败 -> ' + f); });
+  console.log('sitemap.xml 已生成（静态页 ' + STATIC_SITEMAP_ENTRIES.length + ' + 中文设备 ' + entries.length + ' + 英文设备 ' + entries.length + '）');
+  console.log('assets/equipment-data.js 与 assets/model-tables.js 已由 Strapi 数据回写');
+
+  /* 过期页面检测（含 legacy mapping 兼容层）
+   * 分类:
+   *   - knownLegacy  : 旧 slug 命中 data/legacy-equipment-slugs.json → 历史 URL，301 由 Nginx 层负责
+   *   - unknownStale : 不在当前 31 台、也不在 mapping 中 → 真正异常
+   * PRUNE 模式仅清理 unknownStale；known legacy 一律不删，由 legacy-equipment-slugs.json 管理。 */
+  var slugs = new Set(entries.map(function (e) { return e.slug; }));
+  var legacyInfo = null;
+  try {
+    legacyInfo = loadLegacyEquipmentSlugs();
+    console.log('已加载 legacy mapping: 版本 v' + (legacyInfo.version == null ? '?' : legacyInfo.version) +
+      '，共 ' + legacyInfo.oldSlugs.size + ' 条历史 slug（不参与过期清理）');
+  } catch (legacyErr) {
+    /* fail safely：不静默吞错，但不让整个构建崩溃；用户必须看到此错误并处理 */
+    console.warn('⚠ legacy mapping 加载失败，已降级为"全量警告"模式（请检查 ' + LEGACY_SLUGS_PATH + '）: ' + (legacyErr && legacyErr.message ? legacyErr.message : legacyErr));
+  }
+  var legacyOldSlugs = legacyInfo ? legacyInfo.oldSlugs : new Set();
+
+  function classifyHtmlFiles(dir) {
+    if (!fs.existsSync(dir)) return { knownLegacy: [], unknownStale: [] };
+    var all = fs.readdirSync(dir).filter(function (f) {
+      return f.endsWith('.html') && !f.startsWith('_');
+    });
+    var knownLegacy = [];
+    var unknownStale = [];
+    for (var i = 0; i < all.length; i++) {
+      var f = all[i];
+      var slug = f.replace(/\.html$/, '');
+      if (slugs.has(slug)) continue;            /* 当前有效设备 */
+      if (legacyOldSlugs.has(slug)) {
+        knownLegacy.push(slug);                  /* 已确认的历史 URL */
+      } else {
+        unknownStale.push(f);                    /* 真正的未知过期 */
+      }
+    }
+    return { knownLegacy: knownLegacy, unknownStale: unknownStale };
+  }
+
+  /* 中文目录 */
+  var clsZh = classifyHtmlFiles(EQUIPMENT_DIR);
+  if (clsZh.knownLegacy.length) {
+    console.log('  · 中文目录 known legacy: ' + clsZh.knownLegacy.length + ' 个（HTTP 301 由 Nginx 处理，已跳过清理）');
+  }
+  if (clsZh.unknownStale.length) {
+    var listZh = clsZh.unknownStale.join(', ');
+    if (PRUNE) {
+      for (var k = 0; k < clsZh.unknownStale.length; k++) fs.unlinkSync(path.join(EQUIPMENT_DIR, clsZh.unknownStale[k]));
+      console.log('已清理中文未知过期设备页 ' + clsZh.unknownStale.length + ' 个: ' + listZh);
+    } else {
+      console.warn('警告: 中文目录发现 ' + clsZh.unknownStale.length + ' 个未知过期页面（不影响使用，需人工确认）: ' + listZh);
+    }
+  }
+
+  /* 英文目录 */
+  var clsEn = classifyHtmlFiles(EN_EQUIPMENT_DIR);
+  if (clsEn.knownLegacy.length) {
+    console.log('  · 英文目录 known legacy: ' + clsEn.knownLegacy.length + ' 个（HTTP 301 由 Nginx 处理，已跳过清理）');
+  }
+  if (clsEn.unknownStale.length) {
+    var listEn = clsEn.unknownStale.join(', ');
+    if (PRUNE) {
+      for (var m = 0; m < clsEn.unknownStale.length; m++) fs.unlinkSync(path.join(EN_EQUIPMENT_DIR, clsEn.unknownStale[m]));
+      console.log('已清理英文未知过期设备页 ' + clsEn.unknownStale.length + ' 个: ' + listEn);
+    } else {
+      console.warn('警告: 英文目录发现 ' + clsEn.unknownStale.length + ' 个未知过期页面（不影响使用，需人工确认）: ' + listEn);
+    }
+  }
+
+  if (failures.length) {
+    process.exitCode = 1;
+  } else {
+    console.log('✔ 全部生成成功（中文 ' + okZh + ' + 英文 ' + okEn + '）');
+  }
+}
+
+/* 仅在直接运行时执行全量构建；被 require（如草稿预览服务）时只导出函数 */
+if (require.main === module) {
+  main().catch(function (err) {
+    console.error('生成失败: ' + (err && err.stack ? err.stack : err));
+    process.exitCode = 1;
+  });
+}
+
+/* 导出渲染能力，供 scripts/webhook-listener.js 的草稿预览端点复用 */
+module.exports = {
+  ROOT: ROOT,
+  TEMPLATE_PATH: TEMPLATE_PATH,
+  loadEnvFile: loadEnvFile,
+  fetchEquipment: fetchEquipment,
+  renderPage: renderPage,
+  buildStaticHtml: buildStaticHtml,
+  buildProductJsonLd: buildProductJsonLd,
+  mediaToPath: mediaToPath,
+  mediaToPaths: mediaToPaths,
+  normalizeContent: normalizeContent,
+  fetchWebsiteImages: fetchWebsiteImages,
+  processStaticPages: processStaticPages,
+  writeWebsiteImageCss: writeWebsiteImageCss,
+  replaceImgMarkers: replaceImgMarkers,
+  normalizeSlug: normalizeSlug,
+  escapeHtml: escapeHtml,
+  asArray: asArray,
+  imgTag: imgTag,
+  typeZh: typeZh,
+  typeEn: typeEn,
+  loadLegacyEquipmentSlugs: loadLegacyEquipmentSlugs,
+  LEGACY_SLUGS_PATH: LEGACY_SLUGS_PATH,
+};

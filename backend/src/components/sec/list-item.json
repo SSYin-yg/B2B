@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sec_list_items",
+  "info": {
+    "displayName": "列表条目",
+    "icon": "check"
+  },
+  "options": {},
+  "attributes": {
+    "text_zh": {
+      "type": "text",
+      "required": true,
+      "displayName": "条目（中文）"
+    },
+    "text_en": {
+      "type": "text",
+      "displayName": "Item (English)"
+    }
+  }
+}

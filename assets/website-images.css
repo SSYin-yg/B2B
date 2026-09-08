@@ -1,0 +1,11 @@
+/**
+ * 网站图片样式（由 scripts/build-pages.js 从 Strapi「网站图片」自动生成，请勿手工编辑）
+ * 修改图片请前往 Strapi 后台 → 内容 → 网站图片，然后重新运行: npm run build-pages
+ */
+[data-wb-img="home_solutions"]{background-image:linear-gradient(0deg,rgba(12,25,31,.32),rgba(12,25,31,.12)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="about_side"]{background-image:linear-gradient(0deg,rgba(12,25,31,.32),rgba(12,25,31,.12)),url('/uploads/1788670622_899fd2_f0595f56df.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="solutions_hero"]{background-image:linear-gradient(118deg,rgba(12,27,34,.90),rgba(29,51,58,.86)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="about_hero"]{background-image:linear-gradient(118deg,rgba(12,27,34,.90),rgba(29,51,58,.86)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="support_hero"]{background-image:linear-gradient(118deg,rgba(12,27,34,.90),rgba(29,51,58,.86)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="faq_hero"]{background-image:linear-gradient(118deg,rgba(12,27,34,.90),rgba(29,51,58,.86)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}
+[data-wb-img="catalog_hero"]{background-image:linear-gradient(118deg,rgba(12,27,34,.90),rgba(29,51,58,.86)),url('/uploads/1788670622_be892b_c476041743.jpg')!important;background-size:cover;background-position:center}

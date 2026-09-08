@@ -1,0 +1,54 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mail_logs",
+  "info": {
+    "singularName": "maillog",
+    "pluralName": "maillogs",
+    "displayName": "邮件日志",
+    "description": "邮件发送记录（询盘通知等），用于审计与失败重试。不存储 SMTP 密码。"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "type": {
+      "type": "string",
+      "displayName": "邮件类型"
+    },
+    "to": {
+      "type": "string",
+      "displayName": "收件人"
+    },
+    "cc": {
+      "type": "string",
+      "displayName": "抄送"
+    },
+    "bcc": {
+      "type": "string",
+      "displayName": "密送"
+    },
+    "subject": {
+      "type": "string",
+      "displayName": "主题"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "sent",
+        "failed",
+        "skipped"
+      ],
+      "default": "pending",
+      "displayName": "发送状态"
+    },
+    "error_message": {
+      "type": "text",
+      "displayName": "错误信息"
+    },
+    "inquiry_id": {
+      "type": "string",
+      "displayName": "关联询盘 ID"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_sec_headings",
+  "info": {
+    "displayName": "标题",
+    "icon": "heading",
+    "description": "章节标题（H2/H3），H2/H3 会自动进入右侧 Contents 目录"
+  },
+  "options": {},
+  "attributes": {
+    "level": {
+      "type": "enumeration",
+      "enum": ["h2", "h3"],
+      "default": "h2",
+      "required": true,
+      "displayName": "级别"
+    },
+    "text_zh": {
+      "type": "string",
+      "required": true,
+      "displayName": "标题（中文）"
+    },
+    "text_en": {
+      "type": "string",
+      "displayName": "Title (English)"
+    }
+  }
+}

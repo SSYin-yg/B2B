@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sec_notes",
+  "info": {
+    "displayName": "规格表 · 备注",
+    "icon": "info-circle"
+  },
+  "options": {},
+  "attributes": {
+    "text_zh": {
+      "type": "text",
+      "required": true,
+      "displayName": "备注（中文）"
+    },
+    "text_en": {
+      "type": "text",
+      "displayName": "Note (English)"
+    }
+  }
+}

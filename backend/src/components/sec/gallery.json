@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_sec_galleries",
+  "info": {
+    "displayName": "图片组",
+    "icon": "images",
+    "description": "多张图片并排展示（媒体库多选），可加统一说明"
+  },
+  "options": {},
+  "attributes": {
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"],
+      "required": false,
+      "displayName": "图片组"
+    },
+    "caption_zh": {
+      "type": "string",
+      "displayName": "图片说明（中文）"
+    },
+    "caption_en": {
+      "type": "string",
+      "displayName": "Caption (English)"
+    }
+  }
+}

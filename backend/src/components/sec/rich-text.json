@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_sec_rich_texts",
+  "info": {
+    "displayName": "正文",
+    "icon": "pencil",
+    "description": "段落正文（支持加粗、斜体、链接、引用、列表），中英文分别编辑"
+  },
+  "options": {},
+  "attributes": {
+    "body_zh": {
+      "type": "blocks",
+      "displayName": "正文（中文）"
+    },
+    "body_en": {
+      "type": "blocks",
+      "displayName": "Body (English)"
+    }
+  }
+}

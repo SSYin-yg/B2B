@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_sec_spec_rows",
+  "info": {
+    "displayName": "规格表 · 行",
+    "icon": "align-justify",
+    "description": "一行参数；单元格数量应与表头列数一致（按列顺序填写）"
+  },
+  "options": {},
+  "attributes": {
+    "cells": {
+      "type": "component",
+      "component": "sec.spec-cell",
+      "repeatable": true,
+      "displayName": "单元格（按列顺序）"
+    }
+  }
+}

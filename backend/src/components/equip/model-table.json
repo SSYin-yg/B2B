@@ -1,0 +1,37 @@
+{
+  "collectionName": "components_equip_model_tables",
+  "info": {
+    "displayName": "型号参数表",
+    "icon": "grid",
+    "description": "可视化型号规格表：表格标题 + 表头列 + 参数行 + 备注，全部可视化编辑"
+  },
+  "options": {},
+  "attributes": {
+    "title_zh": {
+      "type": "string",
+      "displayName": "表格标题（中文）"
+    },
+    "title_en": {
+      "type": "string",
+      "displayName": "表格标题（英文）"
+    },
+    "columns": {
+      "type": "component",
+      "component": "sec.spec-column",
+      "repeatable": true,
+      "displayName": "表头列（增删 / 改名 / 排序）"
+    },
+    "rows": {
+      "type": "component",
+      "component": "sec.spec-row",
+      "repeatable": true,
+      "displayName": "参数行（增删 / 改单元格 / 排序）"
+    },
+    "notes": {
+      "type": "component",
+      "component": "sec.note",
+      "repeatable": true,
+      "displayName": "备注（增删 / 排序）"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_equip_specs",
+  "info": {
+    "displayName": "主要参数",
+    "icon": "list",
+    "description": "一条主要参数（参数名称 + 参数值），用于设备「主要参数」可视化列表"
+  },
+  "options": {},
+  "attributes": {
+    "k_zh": {
+      "type": "string",
+      "displayName": "参数名称（中文）"
+    },
+    "k_en": {
+      "type": "string",
+      "displayName": "参数名称（英文）"
+    },
+    "v": {
+      "type": "string",
+      "displayName": "参数值"
+    }
+  }
+}

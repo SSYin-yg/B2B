@@ -1,0 +1,36 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_setting",
+  "info": {
+    "singularName": "site-setting",
+    "pluralName": "site-settings",
+    "displayName": "网站全局设置",
+    "description": "站点级全局文字/品牌设置（站点名称、描述等）。与「网站图片」分离，图片仍由 website-image 管理。"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "site_name_zh": {
+      "type": "string",
+      "required": true,
+      "default": "矿联矿机",
+      "displayName": "中文网站名称"
+    },
+    "site_name_en": {
+      "type": "string",
+      "required": true,
+      "default": "MINELINK EQUIPMENT",
+      "displayName": "英文网站名称"
+    },
+    "site_description_zh": {
+      "type": "text",
+      "displayName": "中文网站描述"
+    },
+    "site_description_en": {
+      "type": "text",
+      "displayName": "英文网站描述"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_sec_tables",
+  "info": {
+    "displayName": "普通表格",
+    "icon": "grid",
+    "description": "参数对比 / 配置对比 / 尺寸对比 / 功能说明等通用表格，网格化可视化编辑"
+  },
+  "options": {},
+  "attributes": {
+    "caption_zh": {
+      "type": "string",
+      "displayName": "表格标题（中文）"
+    },
+    "caption_en": {
+      "type": "string",
+      "displayName": "表格标题（英文）"
+    },
+    "table": {
+      "type": "json",
+      "customField": "plugin::equip-editor.plain-table",
+      "displayName": "表格内容（可视化网格编辑）"
+    }
+  }
+}

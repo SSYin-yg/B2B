@@ -1,0 +1,18 @@
+# B2B Strapi systemd 用户服务模板
+# 安装位置：~/.config/systemd/user/strapi-b2b.service
+# 启用：loginctl enable-linger ssyin && systemctl --user daemon-reload && systemctl --user enable --now strapi-b2b
+# 说明见 docs/10-生产环境部署手册.md §五 与 docs/18-日常使用手册.md §1
+
+[Unit]
+Description=B2B Strapi CMS (backend admin + API, :1337)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/B2B
+ExecStart=/usr/bin/npm --prefix /var/www/B2B/backend run start
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

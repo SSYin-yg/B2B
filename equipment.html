@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>设备详情 | 矿联矿机</title>
+  <link rel="stylesheet" href="assets/common.css" />
+  <link rel="stylesheet" href="assets/product.css?v=20260903" />
+</head>
+<body>
+  <main>
+    <section class="product-page"><div class="shell" id="productRoot">
+      <div class="product-missing"><h1>正在跳转…</h1><p>Redirecting…</p><a class="primary" href="equipment-catalog.html">返回设备目录</a></div>
+    </div></section>
+  </main>
+  <script src="assets/equipment-data.js"></script>
+  <script src="assets/model-tables.js"></script>
+  <script src="assets/product-render.js"></script>
+  <script src="assets/i18n.js" defer></script>
+  <script src="assets/contact.js" defer></script>
+  <script>
+    (function () {
+      var id = new URLSearchParams(location.search).get('id');
+      if (id) {
+        var list = window.MinelinkEquipment || [];
+        var found = list.some(function (x) { return x.id === id; });
+        if (found) {
+          location.replace('equipment/' + encodeURIComponent(id) + '.html');
+          return;
+        }
+      }
+      location.replace('equipment-catalog.html');
+    })();
+  </script>
+</body>
+</html>

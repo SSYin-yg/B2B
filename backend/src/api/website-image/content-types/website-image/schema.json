@@ -1,0 +1,143 @@
+{
+  "kind": "collectionType",
+  "collectionName": "website_images",
+  "info": {
+    "singularName": "website-image",
+    "pluralName": "website-images",
+    "displayName": "网站图片",
+    "description": "网站公共图片（首页 Banner / 页头背景 / Logo / 分享图等），与设备产品图片分离管理"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "displayName": "图片名称"
+    },
+    "key": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "regex": "^[a-z0-9]+(?:_[a-z0-9]+)*$",
+      "displayName": "标识 key（禁止修改）"
+    },
+    "page": {
+      "type": "enumeration",
+      "enum": [
+        "global",
+        "home",
+        "catalog",
+        "solutions",
+        "support",
+        "about",
+        "faq",
+        "contact"
+      ],
+      "required": true,
+      "default": "home",
+      "displayName": "所属页面",
+      "enumNames": [
+        "全局",
+        "首页",
+        "设备目录",
+        "行业方案",
+        "服务支持",
+        "关于我们",
+        "常见问题",
+        "联系页面"
+      ]
+    },
+    "position": {
+      "type": "enumeration",
+      "enum": [
+        "hero_banner",
+        "page_header",
+        "solutions_area",
+        "sidebar",
+        "product_area",
+        "header",
+        "footer",
+        "social_share",
+        "favicon",
+        "other"
+      ],
+      "required": true,
+      "default": "other",
+      "displayName": "使用位置",
+      "enumNames": [
+        "顶部 Banner",
+        "页头背景",
+        "行业方案区域",
+        "侧边栏",
+        "产品区域",
+        "页头",
+        "页脚",
+        "社交分享图",
+        "网站图标",
+        "其他"
+      ]
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "banner",
+        "product",
+        "solution",
+        "about",
+        "support",
+        "common",
+        "logo",
+        "other"
+      ],
+      "required": false,
+      "default": "other",
+      "displayName": "图片分类",
+      "enumNames": [
+        "Banner",
+        "产品",
+        "行业方案",
+        "关于我们",
+        "服务支持",
+        "公共资源",
+        "Logo",
+        "其他"
+      ]
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ],
+      "displayName": "图片"
+    },
+    "alt": {
+      "type": "string",
+      "displayName": "替代文字 ALT"
+    },
+    "caption": {
+      "type": "text",
+      "displayName": "图片说明"
+    },
+    "description": {
+      "type": "text",
+      "displayName": "用途说明"
+    },
+    "enabled": {
+      "type": "boolean",
+      "required": false,
+      "default": true,
+      "displayName": "启用"
+    },
+    "sort_order": {
+      "type": "integer",
+      "required": false,
+      "default": 0,
+      "displayName": "排序"
+    }
+  }
+}

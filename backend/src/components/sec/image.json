@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_sec_images",
+  "info": {
+    "displayName": "正文图片",
+    "icon": "picture",
+    "description": "单张正文配图（可放在正文任意位置），支持替代文字与图片说明"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "allowedTypes": ["images"],
+      "required": false,
+      "displayName": "图片"
+    },
+    "alt_zh": {
+      "type": "string",
+      "displayName": "替代文字（中文）"
+    },
+    "alt_en": {
+      "type": "string",
+      "displayName": "Alt text (English)"
+    },
+    "caption_zh": {
+      "type": "string",
+      "displayName": "图片说明（中文）"
+    },
+    "caption_en": {
+      "type": "string",
+      "displayName": "Caption (English)"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+# 环境变量（含密钥）
+.env
+
+# 后端
+backend/node_modules/
+backend/.env
+backend/.tmp/
+backend/dist/
+backend/build/
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+
+# 系统文件
+Thumbs.db
+.DS_Store
+
+# 构建与运行产物（由 build-pages.js 生成，非源码）
+.predeploy-snapshot/
+.content-hash
+
+# 日志
+*.log
+
+# 临时备份文件（*.bak / *-bak-*）
+*.bak
+*-bak-*
+
+# 数据库备份（含业务数据，不入库，由 backup-db.sh 管理）
+backups/
+
+# 根目录 node_modules（若有）
+node_modules/
+# 任意 .bak 变体备份文件（含 .bak-center / .bak-lu4-... 等）
+*.bak*
+
+# 旧仓库历史目录（敏感，勿入库勿公网）
+.git.old/
+.gitignore.save
+*.save
+
+# 环境变量所有变体（.env.bak-* 等）
+.env.*
+backend/.env.*
+!backend/.env.example
+
+# GitHub 备份状态文件
+.last-github-backup

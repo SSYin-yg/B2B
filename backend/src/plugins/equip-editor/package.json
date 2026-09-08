@@ -1,0 +1,25 @@
+{
+  "name": "equip-editor",
+  "version": "1.0.0",
+  "description": "Equipment 可视化编辑插件：型号参数表网格编辑器（custom field）",
+  "strapi": {
+    "kind": "plugin"
+  },
+  "private": true,
+  "license": "MIT",
+  "exports": {
+    "./package.json": "./package.json",
+    "./strapi-admin": {
+      "source": "./admin/src/index.js",
+      "import": "./strapi-admin.js",
+      "require": "./strapi-admin.js",
+      "default": "./strapi-admin.js"
+    },
+    "./strapi-server": {
+      "source": "./strapi-server.js",
+      "import": "./strapi-server.js",
+      "require": "./strapi-server.js",
+      "default": "./strapi-server.js"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_equip_features",
+  "info": {
+    "displayName": "产品特点",
+    "icon": "check",
+    "description": "一条产品特点；用于设备「中文/英文产品特点」可视化列表"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string",
+      "displayName": "特点内容"
+    }
+  }
+}

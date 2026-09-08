@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_sec_lists",
+  "info": {
+    "displayName": "列表",
+    "icon": "bullet-list",
+    "description": "要点列表（✓ 勾选 / 圆点 / 编号），条目可增删、可排序"
+  },
+  "options": {},
+  "attributes": {
+    "variant": {
+      "type": "enumeration",
+      "enum": ["check", "bullet", "ordered"],
+      "default": "check",
+      "required": true,
+      "displayName": "样式"
+    },
+    "items": {
+      "type": "component",
+      "component": "sec.list-item",
+      "repeatable": true,
+      "required": true,
+      "displayName": "列表条目"
+    }
+  }
+}

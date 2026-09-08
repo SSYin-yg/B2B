@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_sec_spec_cells",
+  "info": {
+    "displayName": "规格表 · 单元格",
+    "icon": "text"
+  },
+  "options": {},
+  "attributes": {
+    "value_zh": {
+      "type": "string",
+      "displayName": "内容（中文页）"
+    },
+    "value_en": {
+      "type": "string",
+      "displayName": "Value (English page, 留空则用中文内容)"
+    }
+  }
+}
